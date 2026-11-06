@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { ArenaId } from '../../core/types';
 import { ABILITIES, toy } from '../../core/data/toys';
-import { ARENAS, effectiveness, TYPE_LABEL } from '../../core/data/arenas';
+import { ARENAS, effectiveness } from '../../core/data/arenas';
 import { move } from '../../core/data/moves';
 import {
   applyResult,
@@ -15,12 +15,11 @@ import {
   stewardEncounter,
   stewardReady,
   STARTERS,
-  STARTER_LEVEL,
   ZONES,
   type Encounter,
 } from '../../core/campaign';
 import { isDeluxe, statsAt, xpToNext } from '../../core/stats';
-import { app, go, setSave, stage } from '../store';
+import { app, ask, go, setSave, stage } from '../store';
 import { useObs } from '../obs';
 import { thumbnail } from '../portraits';
 import { Btn, KeyHint, Portrait, StatBars, TypeLoop, useNav } from '../ui';
@@ -107,7 +106,7 @@ export function MapScreen() {
   return (
     <div class="screen map">
       <header class="topbar">
-        <h1 class="headline sm">The North Pole <em>· four days to Christmas Eve</em></h1>
+        <h1 class="headline sm">The North Pole <em>· every department is on strike</em></h1>
         <div class="topbar-r">
           <Btn kind="ghost" onClick={() => go({ id: 'shelf', back: { id: 'map' } })}>The Shelf · {boxedCount}/13</Btn>
           <Btn kind="ghost" onClick={() => go({ id: 'title' })}>Title</Btn>
@@ -252,6 +251,7 @@ export function CampaignBattle({ enc, uid }: { enc: Encounter; uid: string }) {
       ],
       seed: (Date.now() ^ save.seed) >>> 0,
       boxOnWin: true,
+      coach: save.stats.battles === 0,
     });
   }, []);
   useEffect(() => {
@@ -268,7 +268,10 @@ export function CampaignBattle({ enc, uid }: { enc: Encounter; uid: string }) {
       ctl.abort();
     };
   }, []);
-  useEffect(() => onKey((e) => e.action === 'back' && !ctl.hud.get().minigame && confirm('Walk away from this showdown?') && go({ id: 'map' })), []);
+  useEffect(() => onKey((e) => {
+    if (e.action !== 'back' || ctl.hud.get().minigame || app.get().ask) return;
+    void ask('Walk away from this showdown? It won\'t count.', 'Walk away').then((ok) => ok && go({ id: 'map' }));
+  }), []);
   return <BattleHud hud={ctl.hud} />;
 }
 
@@ -326,4 +329,3 @@ export function Results({ result, won, enc, usedUid }: { result: import('../../c
   );
 }
 
-export { TYPE_LABEL, STARTER_LEVEL };

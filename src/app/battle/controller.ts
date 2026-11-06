@@ -8,7 +8,7 @@ import { beginTurn, createBattle, planMove, resolveMove, type BattleEvent, type 
 import { chooseMove, rollDefense, rollScore, SKILL, type CpuLevel } from '../../core/ai';
 import { move } from '../../core/data/moves';
 import { ABILITIES, toy } from '../../core/data/toys';
-import { ARENAS, effectiveness, TYPE_LABEL } from '../../core/data/arenas';
+import { ARENAS, effectiveness } from '../../core/data/arenas';
 import { isDeluxe, STAT_LABEL } from '../../core/stats';
 import type { Control } from '../../input/keys';
 import type { Stage } from '../../render/stage';
@@ -33,6 +33,8 @@ export interface BattleConfig {
   seed: number;
   /** Campaign: drop a gift box over the loser if side 0 wins. */
   boxOnWin?: boolean;
+  /** First showdown ever: explain the controls once, in context. */
+  coach?: boolean;
 }
 
 export interface BattleOutcome {
@@ -43,6 +45,18 @@ export interface BattleOutcome {
 class Aborted extends Error {}
 const other = (s: Side): Side => (s === 0 ? 1 : 0);
 let uid = 1;
+
+/** Playtest telemetry: harmless array the e2e/playtest harness can read. */
+type LogEntry = Record<string, string | number | boolean>;
+function tlog(e: LogEntry) {
+  const w = window as unknown as { __mcLog?: LogEntry[] };
+  (w.__mcLog ??= []).push({ t: Math.round(performance.now()), ...e });
+}
+
+const COACH = {
+  menu: 'Pick a move. Every move is a performance: nail it and it lands harder.',
+  defend: 'Incoming! Press SPACE as the ring closes to keep your cool.',
+} as const;
 
 export const KEEP_COOL_SECONDS = 0.9;
 
@@ -70,6 +84,8 @@ export class BattleController {
   private alive = true;
   private cpu = { rng: 0 };
   private overtimeAnnounced = false;
+  private coached = new Set<string>();
+  private startedAt = performance.now();
 
   constructor(private stage: Stage, private cfg: BattleConfig) {
     this.state = createBattle({ arena: cfg.arena, a: { toyId: cfg.sides[0].toyId, level: cfg.sides[0].level }, b: { toyId: cfg.sides[1].toyId, level: cfg.sides[1].level }, seed: cfg.seed });
@@ -87,8 +103,9 @@ export class BattleController {
       callouts: [],
       words: [],
       turn: null,
+      coach: null,
+      vs: null,
       showHud: false,
-      skippable: false,
     });
   }
 
@@ -165,7 +182,7 @@ export class BattleController {
     const foeType = toy(this.state.sides[other(side)].b.toyId).type;
     return this.state.sides[side].b.moves.map((id) => {
       const m = move(id);
-      return { id, name: m.name, type: m.type, kind: m.kind, power: m.power, game: m.game, difficulty: m.difficulty, naughty: m.naughty, blurb: m.blurb, effect: describeMove(m), superVsFoe: m.kind === 'show' && effectiveness(m.type, foeType) === 'super' };
+      return { id, name: m.name, type: m.type, kind: m.kind, power: m.power, game: m.game, difficulty: m.difficulty, naughty: m.naughty, blurb: m.blurb, effect: describeMove(m), superVsFoe: m.kind === 'show' && effectiveness(m.type, foeType) === 'super', home: m.kind === 'show' && ARENAS[this.cfg.arena].boost === m.type };
     });
   }
 
@@ -237,11 +254,18 @@ export class BattleController {
 
   async run(): Promise<BattleOutcome> {
     try {
-      this.patch({ showHud: false });
-      this.call(this.hud.get().contest.toUpperCase(), 'banner', {}, 1600);
+      const vs = ([0, 1] as const).map((s) => ({ toyId: this.cfg.sides[s].toyId, name: toy(this.cfg.sides[s].toyId).name, label: this.cfg.sides[s].label, level: this.cfg.sides[s].level }));
+      this.patch({ showHud: false, vs });
+      sfx.whoosh();
+      void this.stage.rt.wait(0.35).then(() => sfx.impact(true));
+      const intro = this.director.intro();
+      await this.wait(1.7);
+      this.patch({ vs: null });
+      this.call(this.hud.get().contest.toUpperCase(), 'banner', {}, 1500);
       sfx.round();
       voice('showdown');
-      await this.director.intro();
+      await intro;
+      await this.wait(0.6);
       this.director.shotWide();
       this.patch({ showHud: true });
       await this.wait(0.3);
@@ -268,7 +292,12 @@ export class BattleController {
       await this.wait(0.6);
       moveId = chooseMove(this.state, actor, me.brain ?? 'normal', this.cpu);
     } else {
+      if (this.cfg.coach && !this.coached.has('menu')) {
+        this.coached.add('menu');
+        this.patch({ coach: { text: COACH.menu, where: 'top' } });
+      }
       moveId = await this.askMove(actor);
+      this.patch({ coach: null });
       if (!this.alive) throw new Aborted();
     }
     const plan = planMove(this.state, actor, moveId);
@@ -285,6 +314,7 @@ export class BattleController {
     } else {
       score = await this.askPerformance(actor, plan);
       if (!this.alive) throw new Aborted();
+      tlog({ kind: 'perf', game: m.game, difficulty: plan.difficulty, speed: plan.speed, score: Math.round(score * 100) / 100 });
     }
     this.gradeCallout(score, actor);
     await this.wait(0.25);
@@ -299,6 +329,10 @@ export class BattleController {
         const D = KEEP_COOL_SECONDS;
         const R = this.director.releaseTime(m.anim);
         this.director.shotDefense(actor);
+        if (this.cfg.coach && this.cfg.sides[foe].control !== 'cpu' && !this.coached.has('defend')) {
+          this.coached.add('defend');
+          this.patch({ coach: { text: COACH.defend, where: 'bottom' } });
+        }
         const defP = this.cfg.sides[foe].control === 'cpu' ? this.cpuDefense(foe, D) : this.askDefense(foe, D);
         if (this.cfg.sides[foe].control !== 'cpu') sfx.ring();
         await this.director.tremble(actor, D - R);
@@ -309,6 +343,8 @@ export class BattleController {
         this.word(m.word, this.director.head(foe).add(new THREE.Vector3(0, 0.5, 0)), hex(TYPE_COLOR[m.type]), big ? 1.35 : 1);
         def = await defP;
         if (!this.alive) throw new Aborted();
+        this.patch({ coach: null });
+        if (this.cfg.sides[foe].control !== 'cpu') tlog({ kind: 'defense', grade: def });
       }
       const r = resolveMove(this.state, actor, moveId, score, def);
       this.state = r.state;
@@ -469,6 +505,7 @@ export class BattleController {
 
   private async ending(): Promise<BattleOutcome> {
     const w = this.state.winner!;
+    tlog({ kind: 'battle', winner: w, turns: this.state.turns, rounds: this.state.round, secs: Math.round((performance.now() - this.startedAt) / 100) / 10, a: this.cfg.sides[0].toyId, b: this.cfg.sides[1].toyId });
     const l = other(w);
     this.patch({ turn: null, menu: null, minigame: null, defense: null });
     sfx.victory();
@@ -483,11 +520,10 @@ export class BattleController {
       await p;
       await this.wait(1.0);
     } else {
-      this.call(`${this.cfg.sides[w].label} WINS`, 'banner', {}, 1800);
+      this.call(`${toy(this.cfg.sides[w].toyId).name.toUpperCase()} WINS`, 'banner', {}, 1800);
       await this.wait(1.6);
     }
     return { winner: w, turns: this.state.turns };
   }
 }
 
-export { TYPE_LABEL };

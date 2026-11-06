@@ -23,10 +23,11 @@ function Memo({ re, children, sign = '— Mgmt' }: { re: string; children: Compo
   );
 }
 
-function SceneImg({ k, arena, toys }: { k: string; arena: ArenaId; toys: string[] }) {
+function SceneImg({ k, arena, toys, shot = 'group' }: { k: string; arena: ArenaId; toys: string[]; shot?: 'group' | 'face' }) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
-    void sceneShot(k, () => showcase(arena, toys, 3.2), { pos: [0, 2.3, 10], look: [0, 1.3, 0], fov: 36 }, 720, 400).then(setUrl);
+    const cam = shot === 'face' ? { pos: [0.4, 1.7, 3.6] as [number, number, number], look: [0, 1.45, 0.6] as [number, number, number], fov: 34 } : { pos: [0, 2.3, 10] as [number, number, number], look: [0, 1.3, 0] as [number, number, number], fov: 36 };
+    void sceneShot(k, () => showcase(arena, toys, 3.2), cam, 720, 400).then(setUrl);
   }, [k]);
   return url ? <img class="panel-img" src={url} alt="" /> : <div class="panel-img wait" />;
 }
@@ -70,13 +71,13 @@ export function Intro() {
       panels={[
         { cls: 'night', body: <><p class="cap">The kids were good this year.</p><p class="cap late">All of them.</p></> },
         { cls: 'paper', body: <Memo re="Magic shortfall">Oddrey — top up the Cheer Condenser.</Memo> },
-        { cls: 'boom', body: <><div class="sfx-word" data-text="KA-BLOOM">KA-BLOOM</div><p class="cap">Oddrey topped it up.</p></> },
+        { cls: 'boom', body: <><SceneImg k="intro-oddrey" arena="tree" toys={['oddrey']} shot="face" /><div class="sfx-word over" data-text="KA-BLOOM">KA-BLOOM</div><p class="cap">Oddrey topped it up.</p></> },
         { cls: 'img', body: <><SceneImg k="intro-toys" arena="wrapping" toys={['sprocket', 'jack', 'bigTed', 'cymon', 'slick']} /><p class="cap">Every toy in the workshop woke up. Within the hour, they'd unionized.</p></> },
         {
           cls: 'paper',
           body: (
             <Memo re="The toys">
-              They won't get in the box unless someone beats them at something. Christmas Eve is in four days.
+              They won't get in the box unless someone beats them at something. Christmas Eve is coming regardless.
               <p class="ps">P.S. This is your fault.</p>
             </Memo>
           ),
@@ -95,7 +96,7 @@ export function Ending() {
       onDone={() => go({ id: 'title' })}
       panels={[
         { cls: 'night', body: <><p class="cap">The Topper agreed to go on top of the tree.</p><p class="cap late">She said it was her idea.</p></> },
-        { cls: 'img', body: <><SceneImg k="ending-toys" arena="tree" toys={['chuggs', 'dameFlurry', 'topper', 'colonelCrunch', 'sprocket']} /><p class="cap">Every toy got boxed. Christmas shipped on time.</p></> },
+        { cls: 'img', body: <><SceneImg k="ending-toys" arena="tree" toys={['chuggs', 'dameFlurry', 'oddrey', 'colonelCrunch', 'sprocket']} /><p class="cap">Every toy got boxed. Christmas shipped on time.</p></> },
         {
           cls: 'paper',
           body: (

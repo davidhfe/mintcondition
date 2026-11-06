@@ -8,7 +8,7 @@ export const RHYTHM = {
   windows: { perfect: 55, good: 120, ok: 180 },
 };
 export const TIMING = { sweet: [0.28, 0.21, 0.16], perfect: [0.09, 0.07, 0.055], sweepMs: [950, 790, 650] };
-export const MASH = { durationMs: 2000, target: [10, 13, 16] };
+export const MASH = { durationMs: 2000, target: [9, 12, 14] };
 export const KEEP_COOL = { perfectMs: 75, goodMs: 160 };
 
 /** Pure scoring helpers (unit-tested). */

@@ -33,6 +33,8 @@ export function accepts(control: Control, p: PlayerId): boolean {
 
 type Fn = (e: KeyEvt) => void;
 const subs = new Set<Fn>();
+/** Modal key capture: while non-empty, only the top handler hears keys. */
+const captures: Fn[] = [];
 let installed = false;
 
 function install() {
@@ -46,13 +48,22 @@ function install() {
     if (!a1 && !a2) return;
     e.preventDefault();
     const evt: KeyEvt = { player: a1 ? 0 : 1, action: (a1 ?? a2)!, time: e.timeStamp, repeat: e.repeat };
-    for (const s of [...subs]) s(evt);
+    const top = captures[captures.length - 1];
+    if (top) top(evt);
+    else for (const s of [...subs]) s(evt);
   });
 }
 
 /** Subscribe to mapped key presses. Returns an unsubscribe function. */
-export function onKey(fn: Fn): () => void {
+export function onKey(fn: Fn, opts: { capture?: boolean } = {}): () => void {
   install();
+  if (opts.capture) {
+    captures.push(fn);
+    return () => {
+      const i = captures.lastIndexOf(fn);
+      if (i >= 0) captures.splice(i, 1);
+    };
+  }
   subs.add(fn);
   return () => subs.delete(fn);
 }

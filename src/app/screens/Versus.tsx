@@ -136,6 +136,11 @@ function ToyPick({ cpu, arena, onBack, topper }: { cpu: boolean; arena: ArenaId;
         <StatBars s={statsAt(id, 5)} />
         {effectiveness(t.type, foe.type) === 'super' && foe.ability !== 'topBilling' && <div class="badge good">SUPER SWEET vs {foe.name}</div>}
         {ARENAS[arena].boost === t.type && <div class="badge home">HOME CONTEST</div>}
+        {!locked[p] && !(cpu && p === 1) && (
+          <button class="btn lockin" onClick={() => lockIn(p)}>
+            Lock in · <b>{p === 0 ? 'SPACE' : 'ENTER'}</b>
+          </button>
+        )}
       </div>
     );
   };

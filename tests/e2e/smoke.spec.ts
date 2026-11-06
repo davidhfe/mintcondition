@@ -33,3 +33,21 @@ test('a corrupt save is backed up, not fatal', async ({ page }) => {
   expect(keys.some((k) => k.startsWith('mint-condition/save/corrupt-'))).toBe(true);
   expect(errors).toEqual([]);
 });
+
+test('every sound effect synthesises without throwing', async ({ page }) => {
+  const errors = await boot(page, { clear: true });
+  await page.mouse.click(10, 10); // user gesture unlocks the AudioContext
+  const result = await page.evaluate(async () => {
+    const { sfx } = (window as unknown as { __mc: { sfx: Record<string, (...a: unknown[]) => void> } }).__mc;
+    const fired: string[] = [];
+    for (const [name, fn] of Object.entries(sfx)) {
+      fn(name === 'type' ? 'warm' : name === 'impact' ? true : name === 'hitNote' ? 2 : name === 'mash' ? 5 : undefined);
+      fired.push(name);
+      await new Promise((r) => setTimeout(r, 20));
+    }
+    for (const t of ['frost', 'pine', 'spark', 'plain']) sfx.type!(t);
+    return fired.length;
+  });
+  expect(result).toBeGreaterThan(25);
+  expect(errors).toEqual([]);
+});

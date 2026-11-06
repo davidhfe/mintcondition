@@ -1,5 +1,5 @@
 import { useEffect } from 'preact/hooks';
-import { app, go, setSave, stage } from '../store';
+import { app, ask, go, setSave, stage } from '../store';
 import { useObs } from '../obs';
 import { Btn, KeyHint, useNav } from '../ui';
 import { showcase, TITLE_SHOT } from '../../render/showcase';
@@ -9,7 +9,7 @@ export function Title() {
   const a = useObs(app);
   useEffect(() => {
     const s = stage();
-    const set = showcase('tree', ['jack', 'dameFlurry', 'bigTed', 'colonelCrunch', 'chatterbox'], 3.6);
+    const set = showcase('tree', ['jack', 'dameFlurry', 'oddrey', 'colonelCrunch', 'chatterbox'], 3.6);
     s.setSet(set);
     s.rig.shot({ ...TITLE_SHOT, pos: [-2.6, 6, 18] }, true);
     s.rig.shot(TITLE_SHOT, false, 1.2);
@@ -23,8 +23,8 @@ export function Title() {
     ...(hasSave ? [{ label: 'Continue', act: () => go({ id: 'map' }) }] : []),
     {
       label: hasSave ? 'New Game' : 'Story',
-      act: () => {
-        if (hasSave && !confirm('Start over? Your shelf will be emptied.')) return;
+      act: async () => {
+        if (hasSave && !(await ask('Start over? Your shelf will be emptied.', 'Start over'))) return;
         setSave(null);
         go({ id: 'intro' });
       },
@@ -39,14 +39,14 @@ export function Title() {
       sfx.confirm();
       items[i]!.act();
     },
-    enabled: !a.settingsOpen,
+    enabled: !a.settingsOpen && !a.ask,
   });
   return (
     <div class="screen title">
       <div class="logo">
         <div class="logo-mint" data-text="Mint">Mint</div>
         <div class="logo-cond" data-text="Condition">Condition</div>
-        <div class="tagline">The toys came alive. Then they unionized.</div>
+        <div class="tagline">Toys don't fight. They compete.</div>
       </div>
       <nav class="title-menu">
         {items.map((it, i) => (

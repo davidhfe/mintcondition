@@ -1,5 +1,4 @@
 /** A non-battle arrangement of toys in an arena: title screen, intro panels, ending. */
-import * as THREE from 'three';
 import type { ArenaId } from '../core/types';
 import { arenaSet } from './sets';
 import { buildToy } from './toys';
@@ -34,4 +33,4 @@ export function showcase(arena: ArenaId, toyIds: string[], radius = 3.4, deluxe 
 }
 
 export const TITLE_SHOT = { pos: [-2.6, 2.4, 11.5] as [number, number, number], look: [-3.4, 1.6, 0] as [number, number, number], fov: 34 };
-export { THREE };
+

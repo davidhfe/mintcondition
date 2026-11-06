@@ -5,6 +5,7 @@ import { bigTed, gingerSnap, chuggs } from './warm';
 import { colonelCrunch, dobbin, jack } from './pine';
 import { sprocket, cymon, chatterbox } from './spark';
 import { dameFlurry, slick, abner, topper } from './frost';
+import { oddrey } from './oddrey';
 
 export const BUILDERS: Record<string, ToyBuilder> = {
   bigTed,
@@ -20,6 +21,7 @@ export const BUILDERS: Record<string, ToyBuilder> = {
   slick,
   abner,
   topper,
+  oddrey,
 };
 
 export function buildToy(id: string, rim: number): ToyRig {

@@ -6,7 +6,7 @@ import { Intro, Ending } from './screens/Story';
 import { Starter, MapScreen, EncounterScreen, CampaignBattle, Results } from './screens/Campaign';
 import { VersusSetup, VersusBattle } from './screens/Versus';
 import { Shelf } from './screens/Shelf';
-import { SettingsModal } from './screens/Settings';
+import { AskModal, SettingsModal } from './screens/Settings';
 import { sfx } from '../audio/sfx';
 
 function key(s: Screen): string {
@@ -47,6 +47,7 @@ export function App() {
       </div>
       <div class="wipe" key={`w-${k}`} />
       {a.settingsOpen && <SettingsModal />}
+      {a.ask && <AskModal />}
     </>
   );
 }

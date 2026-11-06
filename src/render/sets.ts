@@ -272,4 +272,3 @@ export function arenaSet(id: ArenaId): ArenaSet {
   };
 }
 
-export { pineTree, giftBox, snowfall };

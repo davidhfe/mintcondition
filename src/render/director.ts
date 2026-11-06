@@ -439,5 +439,3 @@ export class Director {
   }
 }
 
-export const SIDE_COLOR = [PLAYER_RIM[0], PLAYER_RIM[1]] as const;
-export { CANDY };

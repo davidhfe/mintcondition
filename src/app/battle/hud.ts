@@ -14,6 +14,8 @@ export interface MoveView {
   /** Short mechanical summary, e.g. "FLAIR +2" or "60% TANGLE". */
   effect: string;
   superVsFoe: boolean;
+  /** Matches the contest's home type (×1.15). */
+  home: boolean;
 }
 
 export interface SideHud {
@@ -103,6 +105,9 @@ export interface HudState {
   callouts: Callout[];
   words: Word[];
   turn: Side | null;
+  /** First-battle coaching note. */
+  coach: { text: string; where: 'top' | 'bottom' } | null;
+  /** Fighting-game VS splash at the start. */
+  vs: { toyId: string; name: string; label: string; level: number }[] | null;
   showHud: boolean;
-  skippable: boolean;
 }

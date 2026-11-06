@@ -8,6 +8,8 @@ import { hex, TYPE_COLOR } from '../../render/palette';
 import { useObs, type Obs } from '../obs';
 import type { HudState, MenuReq, SideHud } from './hud';
 import { KeepCool, MinigameView } from './Minigames';
+import { Portrait } from '../ui';
+import { isDeluxe } from '../../core/stats';
 
 export function TypeChip({ type, small }: { type: keyof typeof TYPE_LABEL; small?: boolean }) {
   return (
@@ -119,6 +121,7 @@ function MoveMenu({ menu, foeName }: { menu: MenuReq; foeName: string }) {
           <TypeChip type={m.type} small />
           <span class="md-game">{GAME_LABEL[m.game]} {'★'.repeat(m.difficulty)}</span>
           {m.superVsFoe && <span class="chip sweet">SUPER SWEET vs {foeName}</span>}
+          {m.home && <span class="chip deluxe">HOME CONTEST +15%</span>}
         </div>
         <div class="md-name">{m.name}</div>
         <div class="md-effect">{m.effect}{m.naughty ? ` · +${m.naughty} NAUGHTY` : ''}</div>
@@ -150,6 +153,18 @@ export function BattleHud({ hud }: { hud: Obs<HudState> }) {
           <span>{h.caption.text}</span>
         </div>
       )}
+      {h.vs && (
+        <div class="vs-splash">
+          {h.vs.map((v, i) => (
+            <div class={`vs-half side${i}`} key={i}>
+              <Portrait toyId={v.toyId} deluxe={isDeluxe(v.level)} />
+              <div class="vs-name"><small>{v.label}</small>{v.name}</div>
+            </div>
+          ))}
+          <div class="vs-vs">VS</div>
+        </div>
+      )}
+      {h.coach && <div class={`coach panel ${h.coach.where}`} key={h.coach.text}>{h.coach.text}</div>}
       {h.menu && foe && <MoveMenu menu={h.menu} foeName={foe.name} />}
       {h.minigame && <MinigameView req={h.minigame} />}
       {h.defense && <KeepCool req={h.defense} key={h.defense.id} />}

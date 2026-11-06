@@ -9,7 +9,7 @@ import type { BaseStats } from '../core/types';
  * Keyboard navigation over a list/grid. Either player's keys work.
  * cols = 1 → vertical list; cols = n → grid.
  */
-export function useNav(count: number, o: { cols?: number; onAct?: (i: number) => void; onBack?: () => void; onMove?: (i: number) => void; initial?: number; enabled?: boolean }) {
+export function useNav(count: number, o: { cols?: number; onAct?: (i: number) => void; onBack?: () => void; onMove?: (i: number) => void; initial?: number; enabled?: boolean; capture?: boolean }) {
   const [i, setI] = useState(o.initial ?? 0);
   const ref = useRef({ i, o, count });
   ref.current = { i, o, count };
@@ -36,7 +36,7 @@ export function useNav(count: number, o: { cols?: number; onAct?: (i: number) =>
         setI(next);
         opts.onMove?.(next);
       }
-    });
+    }, { capture: o.capture });
   }, []);
   return [i, (v: number) => { setI(v); o.onMove?.(v); }] as const;
 }

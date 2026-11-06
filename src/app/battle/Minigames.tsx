@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { DefenseGrade } from '../../core/types';
-import { accepts, labelFor, onKey, type Action, type Control } from '../../input/keys';
+import { accepts, labelFor, onKey, type Action } from '../../input/keys';
 import { sfx } from '../../audio/sfx';
 import { hex, TYPE_COLOR } from '../../render/palette';
 import type { DefenseReq, MinigameReq } from './hud';
@@ -27,7 +27,7 @@ function Header({ req, hint }: { req: MinigameReq; hint: string }) {
   return (
     <div class="mg-head">
       <span class="mg-move" style={{ color: hex(TYPE_COLOR[req.type]) }}>{req.moveName}</span>
-      <span class="mg-hint">{hint}</span>
+      <span class="mg-hint">{req.speed > 1 && <b class="racket">RACKET: 20% FASTER · </b>}{hint}</span>
     </div>
   );
 }
@@ -321,4 +321,3 @@ export function MinigameView({ req }: { req: MinigameReq }) {
   return <Mash req={req} key={req.id} />;
 }
 
-export type { Control };

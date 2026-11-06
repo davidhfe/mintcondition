@@ -24,6 +24,7 @@ export interface AppState {
   settings: Settings;
   settingsOpen: boolean;
   notice: string | null;
+  ask: { text: string; yes: string; resolve: (ok: boolean) => void } | null;
 }
 
 function safeKV(): KV {
@@ -47,8 +48,26 @@ export const app = new Obs<AppState>({
   save: loaded.status === 'ok' ? loaded.save : null,
   settings: settings ?? DEFAULT_SETTINGS,
   settingsOpen: false,
+  ask: null,
   notice: loaded.status === 'corrupt' ? 'Your save was damaged, so we started fresh. (A backup was kept.)' : null,
 });
+
+/** In-game confirm (no native dialogs). */
+export function ask(text: string, yes = 'Yes'): Promise<boolean> {
+  return new Promise((resolve) => {
+    app.update((s) => ({
+      ...s,
+      ask: {
+        text,
+        yes,
+        resolve: (ok) => {
+          app.update((x) => ({ ...x, ask: null }));
+          resolve(ok);
+        },
+      },
+    }));
+  });
+}
 
 export function go(screen: Screen) {
   app.update((s) => ({ ...s, screen }));

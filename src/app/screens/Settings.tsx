@@ -1,14 +1,31 @@
 import { useEffect } from 'preact/hooks';
-import { app, setSave, setSettings } from '../store';
+import { app, ask, setSave, setSettings } from '../store';
+import { Btn, useNav } from '../ui';
 import { useObs } from '../obs';
 import { onKey } from '../../input/keys';
 import { sfx } from '../../audio/sfx';
 import type { CpuLevel } from '../../core/ai';
 
+export function AskModal() {
+  const a = useObs(app).ask!;
+  const [sel, setSel] = useNav(2, { capture: true, initial: 1, onAct: (i) => (sfx.select(), a.resolve(i === 0)), onBack: () => a.resolve(false) });
+  return (
+    <div class="modal-back ask" onClick={() => a.resolve(false)}>
+      <div class="modal panel" onClick={(e) => e.stopPropagation()}>
+        <p class="ask-text">{a.text}</p>
+        <div class="ask-row">
+          <Btn sel={sel === 0} onClick={() => (setSel(0), a.resolve(true))}>{a.yes}</Btn>
+          <Btn sel={sel === 1} onClick={() => (setSel(1), a.resolve(false))}>Never mind</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SettingsModal() {
   const a = useObs(app);
   const close = () => app.update((s) => ({ ...s, settingsOpen: false }));
-  useEffect(() => onKey((e) => e.action === 'back' && close()), []);
+  useEffect(() => onKey((e) => e.action === 'back' && !app.get().ask && close(), { capture: true }), []);
   const s = a.settings;
   return (
     <div class="modal-back" onClick={close}>
@@ -40,7 +57,7 @@ export function SettingsModal() {
         </table>
         <div class="set-foot">
           {a.save && (
-            <button class="btn ghost danger" onClick={() => confirm('Erase your shelf and progress?') && (setSave(null), close())}>
+            <button class="btn ghost danger" onClick={() => void ask('Erase your shelf and all progress?', 'Erase it').then((ok) => ok && (setSave(null), close()))}>
               Erase progress
             </button>
           )}
