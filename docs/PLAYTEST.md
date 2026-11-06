@@ -45,9 +45,13 @@ campaign ~15 showdowns with stewards beatable and the Topper a real finale.
 
 | Starter | Showdowns | Losses | Wild wins | Steward wins | Topper tries |
 |---|---|---|---|---|---|
-| Big Ted | 15.1 | 2.1 | 98% | 78% | 1.8 |
-| Slick | 15.8 | 2.8 | 91% | 85% | 2.3 |
-| Chatterbox | 13.7 | 0.7 | 98% | 98% | 1.4 |
+| Big Ted | 15.3 | 2.3 | 93% | 76% | 1.4 |
+| Slick | 16.4 | 3.4 | 92% | 82% | 2.8 |
+| Chatterbox | 14.1 | 1.1 | 93% | 91% | 1.1 |
+
+Chatterbox is the easy start, Slick the hard one (its weak department, the
+Roof, arrives before you've boxed a counter). That spread is deliberate
+enough to keep: the starter cards say what each toy is like.
 
 ### What the simulator caught
 
@@ -57,7 +61,7 @@ campaign ~15 showdowns with stewards beatable and the Topper a real finale.
 | Better hands won **84%** of mirrors | Performance range ×0.7–1.25 (was 0.6–1.3), Keep Cool −40/−20% (was −50/−25%) |
 | **Big Ted vs Big Ted never ended** (heal + defence stall) | Overtime from round 7: damage ×1.35, ×1.7… |
 | Roster spread **28–65%** | Slick, Ginger, Jack, Cymon up; Ted, Crunch, Dobbin, Chatterbox down |
-| The Topper took **up to 131 tries** | Normal hands, L9, lower base stats |
+| The Topper took **up to 131 tries** (and 5.1 for a Slick start after the Keep Cool recalibration) | Normal hands, L9, lower base stats → 1.1–2.8 tries |
 | Freshly boxed counters were too weak to use next door | New toys join at best−1; the shelf earns 30% XP |
 | The Roof was a wall (**47–73%** loss) | Smoothed the level curve |
 

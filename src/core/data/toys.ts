@@ -18,7 +18,7 @@ const list: ToyDef[] = [
   { id: 'slick', name: 'Slick', type: 'frost', base: { spirit: 100, flair: 70, poise: 52, hustle: 84 }, ability: 'slippery', moves: ['tripleAxel', 'coldShoulder', 'bellySlide', 'blackIce'], bio: 'Fastest thing on ice. Only thing on ice.', taunt: 'Slick does a lap of honour. Nothing has happened yet.' },
   { id: 'abner', name: 'Abner', type: 'frost', base: { spirit: 150, flair: 50, poise: 60, hustle: 34 }, ability: 'bigSoftie', moves: ['snowAngel', 'bigShrug', 'snowdrift', 'avalanche'], bio: 'Big. Soft. Slightly damp.', taunt: 'Abner is sitting on the path. He seems fine with it.' },
   // BOSS
-  { id: 'topper', name: 'The Topper', type: 'spark', base: { spirit: 128, flair: 66, poise: 60, hustle: 56 }, ability: 'topBilling', moves: ['twinkle', 'warmGlow', 'snowShine', 'spotlight'], bio: 'Will not come down. Frankly, a star.', taunt: 'The Topper will see you now.', boss: true },
+  { id: 'topper', name: 'The Topper', type: 'spark', base: { spirit: 116, flair: 63, poise: 58, hustle: 56 }, ability: 'topBilling', moves: ['twinkle', 'warmGlow', 'snowShine', 'spotlight'], bio: 'Will not come down. Frankly, a star.', taunt: 'The Topper will see you now.', boss: true },
 ];
 
 export const TOYS: Readonly<Record<string, ToyDef>> = Object.fromEntries(list.map((t) => [t.id, t]));
