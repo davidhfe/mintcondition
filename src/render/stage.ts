@@ -358,7 +358,8 @@ export class Stage {
   }
 
   private frame(now: number) {
-    const dtReal = Math.min(0.05, (now - this.last) / 1000);
+    // Clamp only real stalls (tab switch); slow devices must still keep wall-clock pacing.
+    const dtReal = Math.min(0.25, (now - this.last) / 1000);
     this.last = now;
     this.real += dtReal;
     const frozen = this.real < this.hitstopUntil;

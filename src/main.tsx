@@ -1,0 +1,28 @@
+import { render } from 'preact';
+import '@fontsource/bangers';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/600.css';
+import '@fontsource/fraunces/900.css';
+import '@fontsource/fraunces/400-italic.css';
+import '@fontsource/fraunces/600-italic.css';
+import '@fontsource/fraunces/900-italic.css';
+import './styles/app.css';
+import { Stage } from './render/stage';
+import { app, stageRef } from './app/store';
+import { App } from './app/App';
+import { loadVoiceOver, unlockAudio } from './audio/sfx';
+
+const canvas = document.getElementById('stage') as HTMLCanvasElement;
+const stage = new Stage(canvas);
+stage.setReduceFx(app.get().settings.reduceFx || matchMedia('(prefers-reduced-motion: reduce)').matches);
+stageRef.current = stage;
+stage.start();
+
+addEventListener('pointerdown', unlockAudio, { once: true });
+addEventListener('keydown', unlockAudio, { once: true });
+void loadVoiceOver();
+
+render(<App />, document.getElementById('ui')!);
+
+// Test hook: lets the e2e suite inspect state without reaching into modules.
+(window as unknown as { __mc: unknown }).__mc = { app, stage };
