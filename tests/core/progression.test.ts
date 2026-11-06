@@ -82,6 +82,9 @@ describe('campaign', () => {
     const r = applyResult(s, '1-slick', stewardEncounter('bakery'), true, 3);
     expect(r.unlocked).toBe('wrapping');
     expect(r.boxed?.toyId).toBe('chuggs');
+    // joins at max(its level, best - 1)
+    const best = Math.max(...s.shelf.map((t) => t.level));
+    expect(r.boxed?.level).toBe(Math.max(4, best - 1));
     expect(isUnlocked(r.save, 'wrapping')).toBe(true);
   });
 
@@ -93,6 +96,16 @@ describe('campaign', () => {
     expect(r.finished).toBe(true);
     expect(isComplete(r.save)).toBe(true);
     expect(r.boxed?.toyId).toBe('topper');
+  });
+
+  it('benched toys earn a watcher share of XP', () => {
+    let s = start();
+    s = applyResult(s, '1-slick', stewardEncounter('bakery'), true, 1).save; // boxes Chuggs
+    const before = s.shelf.find((t) => t.toyId === 'chuggs')!;
+    const r = applyResult(s, '1-slick', { zone: 'bakery', toyId: 'bigTed', level: 3, steward: false }, true, 2);
+    const after = r.save.shelf.find((t) => t.toyId === 'chuggs')!;
+    expect(after.xp + (after.level > before.level ? 1000 : 0)).toBeGreaterThan(before.xp);
+    expect(Math.round(r.gained * 0.3)).toBeGreaterThan(0);
   });
 
   it('refuses locked zones', () => {

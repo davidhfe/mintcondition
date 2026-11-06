@@ -32,15 +32,13 @@ export const TYPE_REASON: Readonly<Record<ToyType, string>> = {
   spark: 'Lights thaw the frost.',
 };
 
+/** Advantage only: there is no "not very effective". One less rule to learn. */
 export function effectiveness(attack: MoveType, defender: ToyType): Effectiveness {
   if (attack === 'plain') return 'neutral';
-  if (BEATS[attack] === defender) return 'super';
-  if (BEATS[defender] === attack) return 'lukewarm';
-  return 'neutral';
+  return BEATS[attack] === defender ? 'super' : 'neutral';
 }
 
 export const EFFECT_MULT: Readonly<Record<Effectiveness, number>> = {
-  super: 1.5,
+  super: 1.25,
   neutral: 1,
-  lukewarm: 0.67,
 };

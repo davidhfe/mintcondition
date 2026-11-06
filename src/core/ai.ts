@@ -25,7 +25,7 @@ export const SKILL: Readonly<Record<CpuLevel, Skill>> = {
 };
 
 export const DIFFICULTY_PENALTY = 0.07;
-export const SPEED_PENALTY = 0.08;
+export const SPEED_PENALTY = 0.1;
 
 export function expectedScore(skill: Skill, difficulty: Difficulty, speed: number): number {
   return Math.max(0, Math.min(1, skill.mean - DIFFICULTY_PENALTY * (difficulty - 1) - (speed > 1 ? SPEED_PENALTY : 0)));
@@ -48,7 +48,7 @@ function statValue(stages: Record<StatKey, number>, changes: StatChanges | undef
   if (!changes) return 0;
   let v = 0;
   for (const [k, d] of Object.entries(changes) as [StatKey, number][]) {
-    if (sign === -1 && k === 'hustle' && slippery) continue;
+    if (sign === -1 && slippery) continue;
     const st = stages[k] * sign;
     const room = 3 - st;
     if (room <= 0) continue;
@@ -74,7 +74,8 @@ export function scoreMoves(s: BattleState, actor: Side, skill: Skill): { moveId:
       if (plan.willDodge) {
         value = 6 - (m.power ?? 0) / 20; // feed the dodge your cheapest move
       } else {
-        const dmg = computeDamage({ state: s, actor, move: m, score: es, defense: 'none', roll: 0.95 }).amount * 0.85;
+        const repeat = a.lastMove === moveId ? a.repeat + 1 : 0;
+        const dmg = computeDamage({ state: s, actor, move: m, score: es, defense: 'none', roll: 0.95, repeat }).amount * 0.85;
         value = (Math.min(dmg, d.spirit) / d.maxSpirit) * 100;
         if (dmg >= d.spirit) value += 40;
         value += statValue(d.stages, m.foe, -1, 1) * 0.5;

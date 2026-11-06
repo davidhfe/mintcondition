@@ -63,20 +63,21 @@ fill your **Naughty List** meter.
 | **TIMING** | a needle sweeps; stop it in the sweet spot (P1 `Space`, P2 `Enter`) | distance from center |
 | **MASH** | hammer the action key | presses ÷ target |
 
-Score 0–1 → power ×0.6 … ×1.3. Grades: **PERFECT** ≥0.9, **GREAT** ≥0.65,
+Score 0–1 → power ×0.7 … ×1.25. Grades: **PERFECT** ≥0.9, **GREAT** ≥0.65,
 **OK** ≥0.35, else **SLOPPY**. Bigger moves have harder minigames.
 
 ### Keep Cool (defender)
 
 When a SHOW move is about to land, a ring closes on the defender. Press your
-action key as it closes: **UNFAZED** (perfect, −50%) or **STEADY** (−25%).
+action key as it closes: **UNFAZED** (perfect, −40%) or **STEADY** (−20%).
 Early press = flinch, no reduction. Keeps both players' hands on the keys
 every turn.
 
 ### Types
 
-Four types in a loop. Advantage ×1.5 (**SUPER SWEET!**), disadvantage ×0.67
-(**LUKEWARM**). Non-adjacent pairs are neutral. PLAIN moves are always neutral.
+Four types in a loop. Advantage ×1.25 (**SUPER SWEET!**). There is no
+"not very effective" — everything else is neutral. (Balance pass: with a
+penalty too, the advantaged toy won 87–95% of sims; advantage-only lands at 74%.)
 
 ```
 FROST ──▶ WARM ──▶ PINE ──▶ SPARK ──▶ FROST
@@ -87,12 +88,17 @@ FROST ──▶ WARM ──▶ PINE ──▶ SPARK ──▶ FROST
 
 ### The Naughty List
 
-Per player. Naughty moves add 25–40; it drains 8 at the start of each of your
+Per player. Naughty moves add 30–45; it drains 5 at the start of each of your
 turns. At 100: **COAL** — 20% of max Spirit, meter resets.
+
+### Overtime
+
+Contests have a clock. From round 7 the judges get restless: damage ×1.35,
+×1.7, ×2.05… Found by the simulator: Big Ted vs Big Ted never ended.
 
 ### Arenas (the "battle" you select)
 
-The contest matters: moves matching the arena's type get ×1.2.
+The contest matters: moves matching the arena's type get ×1.15.
 
 | Contest | Department | Boost |
 |---|---|---|
@@ -107,13 +113,15 @@ The contest matters: moves matching the arena's type get ×1.2.
 Levels 1–10. Stats scale `base × (0.6 + 0.08·L)`. Moves unlock at L1, L1, L3, L6.
 At **L6** a toy becomes a **DELUXE EDITION**: +10% stats, gold trim, and its
 signature move. (This is the "evolution" — a toy industry joke, not a new
-creature.) Win XP = `18 + 9·foeLevel`; a loss still gives 40%.
+creature.) Win XP = `18 + 9·foeLevel`; a loss still gives 40%. Toys on the
+shelf get 30% ("they were watching"), and a newly boxed toy joins at your best
+toy's level − 1 — otherwise the counter you just caught is useless next door.
 
 ### Damage
 
 ```
-power × (FLAIR'/POISE') × (0.6+0.08·L) × 0.45
-      × type × arena × performance × keepCool × ability × rand(0.9–1.0)
+power × (FLAIR'/POISE') × (0.6+0.08·L) × 0.42
+      × type × arena × performance × keepCool × ability × overtime × rand(0.85–1.0)
 ```
 Stat stages −3…+3 multiply by (3+s)/3 or 3/(3−s).
 
@@ -126,14 +134,14 @@ Each toy has one **ability**: one rule, visible on screen when it fires.
 | Big Ted | WARM | **Unretired** — first KO leaves him at 1 Spirit | Retired from boxing. Unretired for boxing. |
 | Ginger Snap | WARM | **Can't Catch Me** — dodges the first SHOW aimed at him | Fast. Knows it. Mentions it. |
 | Chuggs | WARM | **Coal-Fired** — COAL heals instead of hurts | Runs on coal. Has made peace with that. |
-| Colonel Crunch | PINE | **Perfectionist** — PERFECT lands ×1.5, not ×1.3 | Has cracked 4,000 walnuts. Will tell you about each. |
+| Colonel Crunch | PINE | **Perfectionist** — PERFECT lands ×1.45, not ×1.25 | Has cracked 4,000 walnuts. Will tell you about each. |
 | Dobbin | PINE | **Steady** — Keep Cool is never worse than STEADY | Goes nowhere. Takes his time getting there. |
 | Jack | PINE | **Surprise!** — first SHOW move ×1.5 | Wound up since 1987. |
 | Sprocket | SPARK | **Optimized** — repeating a move: +15% per repeat | Let's circle back on that. |
 | Cymon | SPARK | **Racket** — opponent's minigames run 20% faster | Knows one song. It's this one. |
 | Chatterbox | SPARK | **No Filter** — Naughty moves fill the list half as fast | No body. No filter. |
 | Dame Flurry | FROST | **Shake Me Up** — +1 FLAIR every time she's rattled | Has been shaken. Will not be stirred. |
-| Slick | FROST | **Slippery** — can't be Tangled or slowed | Fastest thing on ice. Only thing on ice. |
+| Slick | FROST | **Slippery** — can't be Tangled; stat drops slide off | Fastest thing on ice. Only thing on ice. |
 | Abner | FROST | **Big Softie** — recovers 6% Spirit after each turn | Big. Soft. Slightly damp. |
 | *The Topper* | SPARK | **Top Billing** — no weaknesses | Will not come down. Frankly, a star. |
 

@@ -57,8 +57,8 @@ export function perfGrade(score: number): PerfGrade {
 /** Minigame score (0–1) → power multiplier. */
 export function perfMult(score: number, perfectionist = false): number {
   const s = Math.max(0, Math.min(1, score));
-  if (perfectionist && s >= 0.9) return 1.5;
-  return 0.6 + 0.7 * s;
+  if (perfectionist && s >= 0.9) return 1.45;
+  return 0.7 + 0.55 * s;
 }
 
 // ── experience ────────────────────────────────────────────

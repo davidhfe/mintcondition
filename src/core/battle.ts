@@ -20,17 +20,17 @@ import { ARENAS, EFFECT_MULT, effectiveness } from './data/arenas';
 import { clampStage, levelFactor, movesAt, perfGrade, perfMult, stageMult, statsAt } from './stats';
 import { nextFloat, range, type RngHolder } from './rng';
 
-export const DAMAGE_K = 0.45;
-export const ARENA_MULT = 1.2;
+export const DAMAGE_K = 0.42;
+export const ARENA_MULT = 1.15;
 export const NAUGHTY_MAX = 100;
-export const NAUGHTY_DECAY = 8;
+export const NAUGHTY_DECAY = 5;
 export const COAL_FRACTION = 0.2;
 export const REGEN_FRACTION = 0.06;
-export const DEFENSE_MULT: Readonly<Record<DefenseGrade, number>> = { perfect: 0.5, good: 0.75, none: 1 };
+export const DEFENSE_MULT: Readonly<Record<DefenseGrade, number>> = { perfect: 0.6, good: 0.8, none: 1 };
 export const RACKET_SPEED = 1.2;
 /** Contests have a clock: from this round on, the judges get restless and damage escalates. */
-export const OVERTIME_ROUND = 8;
-export const OVERTIME_STEP = 0.3;
+export const OVERTIME_ROUND = 7;
+export const OVERTIME_STEP = 0.35;
 
 export function overtimeMult(round: number): number {
   return round >= OVERTIME_ROUND ? 1 + OVERTIME_STEP * (round - OVERTIME_ROUND + 1) : 1;
@@ -222,6 +222,8 @@ export interface DamageInput {
   /** Use 0.95 for expectation instead of a random roll. */
   roll?: number;
   surprise?: boolean;
+  /** Optimized repeat count to assume (defaults to the battler's current). */
+  repeat?: number;
 }
 
 export function computeDamage(inp: DamageInput): { amount: number; eff: Effectiveness; arena: boolean; defense: DefenseGrade } {
@@ -236,9 +238,9 @@ export function computeDamage(inp: DamageInput): { amount: number; eff: Effectiv
   const defense: DefenseGrade = abilityOf(d) === 'steady' && inp.defense === 'none' ? 'good' : inp.defense;
   let mult = EFFECT_MULT[eff] * (arena ? ARENA_MULT : 1) * perfMult(inp.score, abilityOf(a) === 'perfectionist') * DEFENSE_MULT[defense];
   if (inp.surprise) mult *= 1.5;
-  if (abilityOf(a) === 'optimized') mult *= 1 + 0.15 * Math.min(a.repeat, 3);
+  if (abilityOf(a) === 'optimized') mult *= 1 + 0.15 * Math.min(inp.repeat ?? a.repeat, 3);
   mult *= overtimeMult(s.round);
-  const raw = (m.power ?? 0) * (A / D) * levelFactor(a.level) * DAMAGE_K * mult * (inp.roll ?? 0.95);
+  const raw = (m.power ?? 0) * (A / D) * levelFactor(a.level) * DAMAGE_K * mult * (inp.roll ?? 0.925);
   return { amount: Math.max(1, Math.round(raw)), eff, arena, defense };
 }
 
@@ -263,7 +265,7 @@ function changeStats(s: BattleState, side: Side, changes: StatChanges | undefine
   for (const [k, raw] of Object.entries(changes) as [StatKey, number][]) {
     const delta = sloppy ? Math.trunc(raw / 2) : raw;
     if (delta === 0) continue;
-    if (delta < 0 && k === 'hustle' && abilityOf(b) === 'slippery') {
+    if (delta < 0 && abilityOf(b) === 'slippery') {
       events.push({ t: 'ability', side, ability: 'slippery' });
       events.push({ t: 'stat', side, stat: k, delta: 0, stage: b.stages[k], blocked: true });
       continue;
@@ -335,7 +337,7 @@ export function resolveMove(prev: BattleState, actor: Side, moveId: string, scor
         events.push({ t: 'ability', side: actor, ability: 'surprise' });
       }
       if (abilityOf(a) === 'optimized' && a.repeat > 0) events.push({ t: 'ability', side: actor, ability: 'optimized' });
-      const dmg = computeDamage({ state: s, actor, move: m, score: sc, defense: defenseIn, roll: range(s, 0.9, 1), surprise });
+      const dmg = computeDamage({ state: s, actor, move: m, score: sc, defense: defenseIn, roll: range(s, 0.85, 1), surprise });
       if (dmg.defense !== defenseIn && abilityOf(d) === 'steady') events.push({ t: 'ability', side: foeSide, ability: 'steady' });
       const dealt = damage(s, foeSide, dmg.amount, events);
       events.push({ t: 'hit', side: foeSide, amount: dealt, spirit: d.spirit, eff: dmg.eff, arena: dmg.arena, defense: dmg.defense, grade });

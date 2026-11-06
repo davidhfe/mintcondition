@@ -6,7 +6,7 @@ export type Side = 0 | 1;
 export type Difficulty = 1 | 2 | 3;
 export type DefenseGrade = 'perfect' | 'good' | 'none';
 export type PerfGrade = 'perfect' | 'great' | 'ok' | 'sloppy';
-export type Effectiveness = 'super' | 'neutral' | 'lukewarm';
+export type Effectiveness = 'super' | 'neutral';
 
 /** How the stage animates a move. The renderer maps these to choreography. */
 export type AnimKind = 'lunge' | 'spin' | 'hop' | 'pose' | 'shake' | 'stomp' | 'sing';

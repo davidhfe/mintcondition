@@ -4,14 +4,14 @@ const list: MoveDef[] = [
   // ── Big Ted ──────────────────────────────────────────────
   { id: 'cocoaPour', name: 'Cocoa Pour', type: 'warm', kind: 'show', power: 55, game: 'timing', difficulty: 1, word: 'GLUG', anim: 'pose', blurb: 'A perfect spiral. Nobody asked.' },
   { id: 'fluffUp', name: 'Fluff Up', type: 'plain', kind: 'trick', self: { poise: 2 }, game: 'timing', difficulty: 1, word: 'FLUMF', anim: 'shake', blurb: 'Re-stuffs himself with dignity.' },
-  { id: 'hibernate', name: 'Hibernate', type: 'plain', kind: 'trick', heal: 0.35, game: 'timing', difficulty: 2, word: 'ZZZ', anim: 'pose', blurb: 'Naps. Aggressively.' },
+  { id: 'hibernate', name: 'Hibernate', type: 'plain', kind: 'trick', heal: 0.3, game: 'timing', difficulty: 2, word: 'ZZZ', anim: 'pose', blurb: 'Naps. Aggressively.' },
   { id: 'bigHug', name: 'The Big Hug', type: 'warm', kind: 'show', power: 85, game: 'mash', difficulty: 3, word: 'SQUOOSH', anim: 'lunge', blurb: 'Inescapable. Warm. Long.' },
 
   // ── Ginger Snap ──────────────────────────────────────────
-  { id: 'hotBatch', name: 'Hot Batch', type: 'warm', kind: 'show', power: 50, game: 'rhythm', difficulty: 1, word: 'SIZZLE', anim: 'hop', blurb: 'Fresh out. Still smoking.' },
+  { id: 'hotBatch', name: 'Hot Batch', type: 'warm', kind: 'show', power: 55, game: 'rhythm', difficulty: 1, word: 'SIZZLE', anim: 'hop', blurb: 'Fresh out. Still smoking.' },
   { id: 'runRunRun', name: 'Run Run Run', type: 'plain', kind: 'trick', self: { flair: 1, hustle: 1 }, game: 'timing', difficulty: 1, word: 'ZOOM', anim: 'spin', blurb: "As fast as he can. He'll tell you how fast." },
   { id: 'crumbTrail', name: 'Crumb Trail', type: 'plain', kind: 'trick', naughty: 30, tangle: 0.6, game: 'timing', difficulty: 2, word: 'CRUNCH', anim: 'hop', blurb: 'Leaves crumbs. Someone slips.' },
-  { id: 'icingOnTop', name: 'Icing on Top', type: 'warm', kind: 'show', power: 80, game: 'rhythm', difficulty: 3, word: 'SPLORT', anim: 'spin', blurb: 'Piped freehand. Flawless. Smug.' },
+  { id: 'icingOnTop', name: 'Icing on Top', type: 'warm', kind: 'show', power: 85, game: 'rhythm', difficulty: 3, word: 'SPLORT', anim: 'spin', blurb: 'Piped freehand. Flawless. Smug.' },
 
   // ── Chuggs ───────────────────────────────────────────────
   { id: 'fullSteam', name: 'Full Steam', type: 'warm', kind: 'show', power: 60, game: 'mash', difficulty: 2, word: 'CHOO CHOO', anim: 'lunge', blurb: 'Zero to forty. On carpet.' },
@@ -52,7 +52,7 @@ const list: MoveDef[] = [
   // ── Chatterbox ───────────────────────────────────────────
   { id: 'chatter', name: 'Chatter', type: 'spark', kind: 'show', power: 50, game: 'mash', difficulty: 1, word: 'CHK-CHK-CHK', anim: 'hop', blurb: 'Says nothing. Constantly.' },
   { id: 'trashTalk', name: 'Trash Talk', type: 'plain', kind: 'trick', naughty: 30, foe: { poise: -2 }, game: 'timing', difficulty: 1, word: 'YAP YAP', anim: 'hop', blurb: 'Mostly about your paint job.' },
-  { id: 'gnash', name: 'Gnash', type: 'spark', kind: 'show', power: 70, naughty: 35, pierce: 0.5, game: 'mash', difficulty: 2, word: 'GNASH', anim: 'lunge', blurb: 'All teeth. Literally.' },
+  { id: 'gnash', name: 'Gnash', type: 'spark', kind: 'show', power: 65, naughty: 35, pierce: 0.5, game: 'mash', difficulty: 2, word: 'GNASH', anim: 'lunge', blurb: 'All teeth. Literally.' },
   { id: 'sayCheese', name: 'Say Cheese', type: 'spark', kind: 'show', power: 80, tangle: 0.25, game: 'timing', difficulty: 3, word: 'GRIN', anim: 'pose', blurb: "A smile you'll see when you close your eyes." },
 
   // ── Dame Flurry ──────────────────────────────────────────
@@ -62,10 +62,10 @@ const list: MoveDef[] = [
   { id: 'blizzardBallad', name: 'Blizzard Ballad', type: 'frost', kind: 'show', power: 90, game: 'rhythm', difficulty: 3, word: 'LA-LAAA', anim: 'sing', blurb: "Sings. It's a lot." },
 
   // ── Slick ────────────────────────────────────────────────
-  { id: 'tripleAxel', name: 'Triple Axel', type: 'frost', kind: 'show', power: 50, game: 'timing', difficulty: 1, word: 'WHIRL', anim: 'spin', blurb: 'Lands it. Looks at the judges.' },
+  { id: 'tripleAxel', name: 'Triple Axel', type: 'frost', kind: 'show', power: 55, game: 'timing', difficulty: 1, word: 'WHIRL', anim: 'spin', blurb: 'Lands it. Looks at the judges.' },
   { id: 'coldShoulder', name: 'Cold Shoulder', type: 'frost', kind: 'trick', naughty: 30, foe: { poise: -2 }, game: 'timing', difficulty: 1, word: 'HMPH', anim: 'pose', blurb: 'Ignores them. Pointedly.' },
-  { id: 'bellySlide', name: 'Belly Slide', type: 'plain', kind: 'show', power: 60, game: 'mash', difficulty: 2, word: 'ZWOOP', anim: 'lunge', blurb: 'Undignified. Unstoppable.' },
-  { id: 'blackIce', name: 'Black Ice', type: 'frost', kind: 'show', power: 75, naughty: 35, tangle: 0.3, game: 'timing', difficulty: 3, word: 'SKRRT', anim: 'spin', blurb: 'Leaves a patch. Innocently.' },
+  { id: 'bellySlide', name: 'Belly Slide', type: 'plain', kind: 'show', power: 65, game: 'mash', difficulty: 2, word: 'ZWOOP', anim: 'lunge', blurb: 'Undignified. Unstoppable.' },
+  { id: 'blackIce', name: 'Black Ice', type: 'frost', kind: 'show', power: 85, naughty: 30, tangle: 0.3, game: 'timing', difficulty: 3, word: 'SKRRT', anim: 'spin', blurb: 'Leaves a patch. Innocently.' },
 
   // ── Abner ────────────────────────────────────────────────
   { id: 'snowAngel', name: 'Snow Angel', type: 'frost', kind: 'show', power: 50, game: 'timing', difficulty: 1, word: 'FWUMP', anim: 'stomp', blurb: 'Lies down. Makes art. Gets up.' },

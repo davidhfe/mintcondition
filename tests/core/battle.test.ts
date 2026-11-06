@@ -28,12 +28,12 @@ function turn(s: BattleState, expected?: Side) {
 const has = (evs: BattleEvent[], pred: (e: BattleEvent) => boolean) => evs.some(pred);
 
 describe('type chart', () => {
-  it('runs FROST > WARM > PINE > SPARK > FROST', () => {
+  it('runs FROST > WARM > PINE > SPARK > FROST, advantage only', () => {
     expect(effectiveness('frost', 'warm')).toBe('super');
     expect(effectiveness('warm', 'pine')).toBe('super');
     expect(effectiveness('pine', 'spark')).toBe('super');
     expect(effectiveness('spark', 'frost')).toBe('super');
-    expect(effectiveness('warm', 'frost')).toBe('lukewarm');
+    expect(effectiveness('warm', 'frost')).toBe('neutral'); // no penalties, only advantages
     expect(effectiveness('frost', 'pine')).toBe('neutral');
     expect(effectiveness('warm', 'spark')).toBe('neutral');
     expect(effectiveness('plain', 'warm')).toBe('neutral');
@@ -71,7 +71,7 @@ describe('damage', () => {
   it('scales with performance', () => {
     expect(dmg(0)).toBeLessThan(dmg(0.5));
     expect(dmg(0.5)).toBeLessThan(dmg(1));
-    expect(Math.abs(dmg(1) / dmg(0) - 1.3 / 0.6)).toBeLessThan(0.15);
+    expect(Math.abs(dmg(1) / dmg(0) - 1.25 / 0.7)).toBeLessThan(0.15);
   });
   it('is reduced by Keep Cool, but Steady floors it at good', () => {
     // Dobbin (defender here) is Steady: 'none' behaves like 'good'.
@@ -229,11 +229,11 @@ describe('abilities', () => {
 });
 
 describe('overtime', () => {
-  it('escalates damage from round 8 so stalls end', async () => {
+  it('escalates damage from round 7 so stalls end', async () => {
     const { overtimeMult } = await import('../../src/core/battle');
-    expect(overtimeMult(7)).toBe(1);
-    expect(overtimeMult(8)).toBeCloseTo(1.3);
-    expect(overtimeMult(10)).toBeCloseTo(1.9);
+    expect(overtimeMult(6)).toBe(1);
+    expect(overtimeMult(7)).toBeCloseTo(1.35);
+    expect(overtimeMult(9)).toBeCloseTo(2.05);
   });
 });
 
