@@ -1,0 +1,11 @@
+import { defineConfig } from 'vite';
+import preact from '@preact/preset-vite';
+
+export default defineConfig({
+  plugins: [preact()],
+  build: { target: 'es2022', sourcemap: true, chunkSizeWarningLimit: 900 },
+  test: {
+    include: ['tests/**/*.test.ts'],
+    environment: 'node',
+  },
+});

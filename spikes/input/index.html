@@ -1,0 +1,7 @@
+<!doctype html><html><head><meta charset="utf-8"><title>spike: input timing</title></head><body>
+<script>
+// Records keydown timestamps; compares event.timeStamp vs performance.now() at handler, and rAF cadence.
+window.__log = [];
+addEventListener('keydown', e => { const now = performance.now(); __log.push({ ts: e.timeStamp, now, lag: now - e.timeStamp }); });
+window.__raf = []; let last = 0; (function f(t){ if (last) __raf.push(t - last); last = t; requestAnimationFrame(f); })(0);
+</script></body></html>
