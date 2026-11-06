@@ -2,12 +2,12 @@ import type { ToyDef, AbilityDef, AbilityId } from '../types';
 
 const list: ToyDef[] = [
   // WARM
-  { id: 'bigTed', name: 'Big Ted', type: 'warm', base: { spirit: 126, flair: 55, poise: 62, hustle: 30 }, ability: 'unretired', moves: ['cocoaPour', 'fluffUp', 'hibernate', 'bigHug'], bio: 'Retired from boxing. Unretired for boxing.', taunt: 'Big Ted cracks his neck. It squeaks.' },
+  { id: 'bigTed', name: 'Big Ted', type: 'warm', base: { spirit: 118, flair: 55, poise: 60, hustle: 30 }, ability: 'unretired', moves: ['cocoaPour', 'fluffUp', 'hibernate', 'bigHug'], bio: 'Retired from boxing. Unretired for boxing.', taunt: 'Big Ted cracks his neck. It squeaks.' },
   { id: 'gingerSnap', name: 'Ginger Snap', type: 'warm', base: { spirit: 100, flair: 66, poise: 46, hustle: 78 }, ability: 'cantCatchMe', moves: ['hotBatch', 'runRunRun', 'crumbTrail', 'icingOnTop'], bio: 'Has never been caught. Brings it up a lot.', taunt: 'Ginger Snap is stretching where you can see it.' },
   { id: 'chuggs', name: 'Chuggs', type: 'warm', base: { spirit: 120, flair: 68, poise: 55, hustle: 45 }, ability: 'coalFired', moves: ['fullSteam', 'whistleStop', 'coalShovel', 'lastStop'], bio: 'Runs on coal. Has made peace with that.', taunt: 'Chuggs has been idling here since lunch.' },
   // PINE
   { id: 'colonelCrunch', name: 'Colonel Crunch', type: 'pine', base: { spirit: 110, flair: 62, poise: 66, hustle: 40 }, ability: 'perfectionist', moves: ['nutcrackerSuite', 'atAttention', 'nitpick', 'salute21'], bio: 'Has cracked 4,000 walnuts. Will tell you about each.', taunt: 'Colonel Crunch is inspecting your seams.' },
-  { id: 'dobbin', name: 'Dobbin', type: 'pine', base: { spirit: 122, flair: 56, poise: 60, hustle: 44 }, ability: 'steady', moves: ['backAndForth', 'giddyUp', 'longFace', 'fullGallop'], bio: 'Goes nowhere. Takes his time getting there.', taunt: 'Dobbin has been rocking at you for a while now.' },
+  { id: 'dobbin', name: 'Dobbin', type: 'pine', base: { spirit: 126, flair: 58, poise: 61, hustle: 44 }, ability: 'steady', moves: ['backAndForth', 'giddyUp', 'longFace', 'fullGallop'], bio: 'Goes nowhere. Takes his time getting there.', taunt: 'Dobbin has been rocking at you for a while now.' },
   { id: 'jack', name: 'Jack', type: 'pine', base: { spirit: 95, flair: 80, poise: 44, hustle: 64 }, ability: 'surprise', moves: ['popGoes', 'woundUp', 'jumpScare', 'jackpot'], bio: 'Wound up since 1987.', taunt: 'Something in the box is humming.' },
   // SPARK
   { id: 'sprocket', name: 'Sprocket', type: 'spark', base: { spirit: 115, flair: 62, poise: 60, hustle: 55 }, ability: 'optimized', moves: ['circleBack', 'synergize', 'downsize', 'mandatoryFun'], bio: "Let's circle back on that.", taunt: 'Sprocket sent a calendar invite for this.' },

@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "e2e": "playwright test",
     "ci": "npm run lint && npm run typecheck && npm test && npm run build",
-    "build:artifact": "vite build -c vite.artifact.config.ts && node scripts/artifact-wrap.mjs"
+    "build:artifact": "vite build -c vite.artifact.config.ts && node scripts/artifact-wrap.mjs",
+    "curve": "tsx scripts/minigame-curve.ts"
   },
   "license": "UNLICENSED",
   "devDependencies": {

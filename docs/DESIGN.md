@@ -64,7 +64,12 @@ fill your **Naughty List** meter.
 | **MASH** | hammer the action key | presses ÷ target |
 
 Score 0–1 → power ×0.7 … ×1.25. Grades: **PERFECT** ≥0.9, **GREAT** ≥0.65,
-**OK** ≥0.35, else **SLOPPY**. Bigger moves have harder minigames.
+**OK** ≥0.35, else **SLOPPY**. Bigger moves have harder minigames (tighter
+windows, faster needles, higher mash targets).
+
+The windows are calibrated (`npm run curve`) so an average player — about
+70ms of timing error — scores what the CPU's *normal* hands do: ~0.70 on a ★
+move down to ~0.55 on ★★★. A first-timer lands ~0.5; a rhythm-game regular ~0.95.
 
 ### Keep Cool (defender)
 
@@ -93,8 +98,9 @@ turns. At 100: **COAL** — 20% of max Spirit, meter resets.
 
 ### Overtime
 
-Contests have a clock. From round 7 the judges get restless: damage ×1.35,
-×1.7, ×2.05… Found by the simulator: Big Ted vs Big Ted never ended.
+Contests have a clock. From round 7 the judges get restless: damage ×1.4,
+compounding every round (×1.96, ×2.74…). Found by the simulator: Big Ted vs
+Big Ted never ended. A linear ramp still let a playtest mirror run 17 rounds.
 
 ### Arenas (the "battle" you select)
 

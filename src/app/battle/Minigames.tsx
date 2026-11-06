@@ -10,7 +10,7 @@ import { sfx } from '../../audio/sfx';
 import { hex, TYPE_COLOR } from '../../render/palette';
 import type { DefenseReq, MinigameReq } from './hud';
 
-import { RHYTHM, TIMING, MASH, KEEP_COOL, rhythmNoteScore, timingScore, keepCoolGrade } from './scoring';
+import { RHYTHM, TIMING, MASH, KEEP_COOL, LATE_ALLOWANCE_MS, rhythmNoteScore, rhythmWindow, timingScore, keepCoolGrade } from './scoring';
 
 const LANES: Action[] = ['left', 'down', 'up', 'right'];
 const ARROW_ROT: Record<string, number> = { left: -90, down: 180, up: 0, right: 90 };
@@ -74,14 +74,15 @@ export function Rhythm({ req }: { req: MinigameReq }) {
     const show = (lane: number, text: string) => setFlash({ lane, text, k: Math.random() });
     const judge = (lane: number, time: number) => {
       let best: Note | null = null;
-      for (const nt of notes) if (!nt.judged && nt.lane === lane && Math.abs(time - nt.t) <= RHYTHM.windows.ok && (!best || Math.abs(time - nt.t) < Math.abs(time - best.t))) best = nt;
+      const okWin = rhythmWindow(req.difficulty);
+      for (const nt of notes) if (!nt.judged && nt.lane === lane && Math.abs(time - nt.t) <= okWin && (!best || Math.abs(time - nt.t) < Math.abs(time - best.t))) best = nt;
       if (!best) {
         stray++;
         sfx.missNote();
         return;
       }
       best.judged = true;
-      best.score = rhythmNoteScore(time - best.t);
+      best.score = rhythmNoteScore(time - best.t, req.difficulty);
       best.el?.classList.add('hit');
       sfx.hitNote(lane);
       show(lane, best.score === 1 ? 'PERFECT' : best.score >= 0.75 ? 'GOOD' : 'OK');
@@ -92,7 +93,7 @@ export function Rhythm({ req }: { req: MinigameReq }) {
         if (!nt.el) continue;
         const y = ((nt.t - now) / travel) * (H - 70);
         nt.el.style.transform = `translateY(${y}px)`;
-        if (!nt.judged && now - nt.t > RHYTHM.windows.ok) {
+        if (!nt.judged && now - nt.t > rhythmWindow(req.difficulty)) {
           nt.judged = true;
           nt.el.classList.add('miss');
           show(nt.lane, 'MISS');
@@ -289,7 +290,7 @@ export function KeepCool({ req }: { req: DefenseReq }) {
       const now = performance.now();
       const k = Math.min(1, (now - t0) / (req.duration * 1000));
       if (ring.current) ring.current.style.transform = `translate(-50%,-50%) scale(${3.2 - 2.2 * k})`;
-      if (now > T + KEEP_COOL.goodMs) {
+      if (now > T + KEEP_COOL.goodMs + LATE_ALLOWANCE_MS) {
         decide('none', 'none');
         return;
       }

@@ -19,9 +19,10 @@ export interface Skill {
 }
 
 export const SKILL: Readonly<Record<CpuLevel, Skill>> = {
-  easy: { mean: 0.45, sd: 0.2, defPerfect: 0.05, defGood: 0.2 },
-  normal: { mean: 0.66, sd: 0.17, defPerfect: 0.15, defGood: 0.35 },
-  hard: { mean: 0.82, sd: 0.12, defPerfect: 0.3, defGood: 0.45 },
+  // Calibrated against people with `npm run curve`: normal ≈ an average player (~70ms timing error).
+  easy: { mean: 0.45, sd: 0.2, defPerfect: 0.15, defGood: 0.3 },
+  normal: { mean: 0.66, sd: 0.17, defPerfect: 0.35, defGood: 0.4 },
+  hard: { mean: 0.82, sd: 0.12, defPerfect: 0.5, defGood: 0.35 },
 };
 
 export const DIFFICULTY_PENALTY = 0.07;

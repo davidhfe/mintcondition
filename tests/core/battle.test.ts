@@ -232,8 +232,8 @@ describe('overtime', () => {
   it('escalates damage from round 7 so stalls end', async () => {
     const { overtimeMult } = await import('../../src/core/battle');
     expect(overtimeMult(6)).toBe(1);
-    expect(overtimeMult(7)).toBeCloseTo(1.35);
-    expect(overtimeMult(9)).toBeCloseTo(2.05);
+    expect(overtimeMult(7)).toBeCloseTo(1.4);
+    expect(overtimeMult(9)).toBeCloseTo(2.744);
   });
 });
 

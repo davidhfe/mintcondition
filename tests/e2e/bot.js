@@ -1,68 +1,108 @@
-// A page-side bot that plays Mint Condition through the real UI, for both players.
-// It reads the DOM (notes, needle, ring) and dispatches real keydown events, so
-// the game's own timing code is what gets exercised. skill ∈ [0,1].
+// A page-side bot that plays Mint Condition through the real UI, for either player.
+//
+// It doesn't react to frames (headless WebGL can run at 5–12fps, which would make
+// every reading stale). Instead it watches the DOM with MutationObservers, predicts
+// *when* each note arrives / the needle crosses centre / the ring closes, and
+// schedules a real keydown for that moment plus a human-like timing error:
+//   error ~ N(+25ms late bias, σ)
+// so its scores reflect σ, not the frame rate. The game judges by event timestamp.
+//
+// window.__bot = { on, sigma (ms), mashRate (presses/s), skill (legacy 0–1 → σ) }
 (() => {
-  const bot = { on: false, skill: 0.85, log: [] };
+  const bot = { on: false, sigma: null, skill: 0.85, mashRate: null, log: [] };
   window.__bot = bot;
+  const sigma = () => bot.sigma ?? 20 + (1 - bot.skill) * 200;
+  const rate = () => bot.mashRate ?? (sigma() <= 40 ? 8 : sigma() <= 80 ? 6.5 : 5.5);
+  const gauss = () => {
+    let u = 0;
+    for (let i = 0; i < 6; i++) u += Math.random();
+    return (u - 3) * Math.SQRT2;
+  };
+  const err = () => 25 + gauss() * sigma();
   const KEYS = {
     p1: { up: 'KeyW', left: 'KeyA', down: 'KeyS', right: 'KeyD', act: 'Space' },
     p2: { up: 'ArrowUp', left: 'ArrowLeft', down: 'ArrowDown', right: 'ArrowRight', act: 'Enter' },
   };
   const press = (code) => window.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true }));
   const keysFor = (el) => KEYS[(el && el.closest('[data-control]')?.dataset.control) === 'p2' ? 'p2' : 'p1'];
-  const jitter = () => (1 - bot.skill) * (Math.random() - 0.3) * 260;
-  const pressed = new WeakSet();
-  let mashT = 0, menuT = 0, timingDone = null, ringDone = null;
+  const at = (when, fn) => setTimeout(fn, Math.max(0, when - performance.now()));
   const LANES = ['left', 'down', 'up', 'right'];
-  function tick() {
-    if (bot.on) {
-      const now = performance.now();
-      const menu = document.querySelector('.menu[data-control]');
-      if (menu && now - menuT > 450) {
-        menuT = now;
-        const k = keysFor(menu);
-        const n = menu.querySelectorAll('.mcard').length;
-        const slot = ['up', 'left', 'right', 'down'][Math.floor(Math.random() * n)];
-        press(k[slot]);
-        setTimeout(() => press(k.act), 120);
-      }
-      const field = document.querySelector('.rh-field');
-      if (field) {
-        const k = keysFor(field);
-        for (const n of field.querySelectorAll('.rh-note')) {
-          if (pressed.has(n) || n.classList.contains('hit') || n.classList.contains('miss')) continue;
-          const m = /translateY\(([-\d.]+)px\)/.exec(n.style.transform);
-          if (m && parseFloat(m[1]) < 10) {
-            pressed.add(n);
-            const lane = Math.round(parseFloat(n.style.left) / 25);
-            setTimeout(() => press(k[LANES[lane]]), Math.max(0, jitter()));
-          }
-        }
-      }
-      const needle = document.querySelector('.tm-needle');
-      if (needle && timingDone !== needle) {
-        const x = parseFloat(needle.style.left || '0');
-        const target = 50 + (1 - bot.skill) * (Math.random() - 0.5) * 40;
-        if (Math.abs(x - target) < 2.5) {
-          timingDone = needle;
-          press(keysFor(needle).act);
-        }
-      }
-      const meter = document.querySelector('.ms-meter');
-      if (meter && now - mashT > 60 + (1 - bot.skill) * 120) {
-        mashT = now;
-        press(keysFor(meter).act);
-      }
-      const ring = document.querySelector('.kc-ring');
-      if (ring && ringDone !== ring && !/perfect|good|none|flinch/.test(ring.className)) {
-        const m = /scale\(([\d.]+)\)/.exec(ring.style.transform);
-        if (m && parseFloat(m[1]) < 1.08 + jitter() / 2000) {
-          ringDone = ring;
-          press(keysFor(ring).act);
-        }
+
+  // Two observations of a linearly moving value → predicted time it reaches `target`.
+  const tracks = new WeakMap();
+  function predict(el, value, target, onTime) {
+    const now = performance.now();
+    const prev = tracks.get(el);
+    if (!prev) return tracks.set(el, { v: value, t: now, done: false });
+    if (prev.done) return;
+    const dv = value - prev.v;
+    const dt = now - prev.t;
+    if (dt < 1 || Math.abs(dv) < 1e-6) return;
+    const speed = dv / dt;
+    const eta = (target - value) / speed;
+    if (eta < 0) {
+      tracks.set(el, { v: value, t: now, done: false });
+      return;
+    }
+    prev.done = true;
+    onTime(now + eta);
+  }
+
+  const mo = new MutationObserver((muts) => {
+    if (!bot.on) return;
+    for (const m of muts) {
+      const el = m.target;
+      if (!(el instanceof HTMLElement)) continue;
+      if (el.classList.contains('rh-note')) {
+        const y = parseFloat((/translateY\(([-\d.]+)px\)/.exec(el.style.transform) || [])[1]);
+        if (Number.isNaN(y)) continue;
+        predict(el, y, 0, (t) => {
+          const lane = Math.round(parseFloat(el.style.left) / 25);
+          const k = keysFor(el);
+          at(t + err(), () => press(k[LANES[lane]]));
+        });
+      } else if (el.classList.contains('tm-needle')) {
+        const x = parseFloat(el.style.left || '0');
+        predict(el, x, 50, (t) => {
+          const k = keysFor(el);
+          at(t + err(), () => press(k.act));
+        });
+      } else if (el.classList.contains('kc-ring')) {
+        const s = parseFloat((/scale\(([\d.]+)\)/.exec(el.style.transform) || [])[1]);
+        if (Number.isNaN(s)) continue;
+        predict(el, s, 1, (t) => {
+          const k = keysFor(el);
+          at(t + err(), () => press(k.act));
+        });
       }
     }
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  });
+  const start = () => mo.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+  if (document.body) start();
+  else addEventListener('DOMContentLoaded', start);
+
+  // Menus and mashing are polled; neither is timing-sensitive.
+  let menuT = 0;
+  let mashT = 0;
+  setInterval(() => {
+    if (!bot.on) return;
+    const now = performance.now();
+    const menu = document.querySelector('.menu[data-control]');
+    if (menu && now - menuT > 500) {
+      menuT = now;
+      const k = keysFor(menu);
+      const cards = [...menu.querySelectorAll('.mcard')];
+      // People mostly attack: 70% pick a SHOW move when one exists.
+      const shows = cards.map((c, i) => (/POW/.test(c.textContent) ? i : -1)).filter((i) => i >= 0);
+      const pick = shows.length && Math.random() < 0.7 ? shows[Math.floor(Math.random() * shows.length)] : Math.floor(Math.random() * cards.length);
+      bot.log.push({ kind: 'menu', pick: cards[pick]?.querySelector('.mname')?.textContent });
+      press(k[['up', 'left', 'right', 'down'][pick]]);
+      setTimeout(() => press(k.act), 150);
+    }
+    const meter = document.querySelector('.ms-meter');
+    if (meter && now - mashT > 1000 / rate() + gauss() * 15) {
+      mashT = now;
+      press(keysFor(meter).act);
+    }
+  }, 16);
 })();

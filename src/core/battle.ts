@@ -28,12 +28,15 @@ export const COAL_FRACTION = 0.2;
 export const REGEN_FRACTION = 0.06;
 export const DEFENSE_MULT: Readonly<Record<DefenseGrade, number>> = { perfect: 0.6, good: 0.8, none: 1 };
 export const RACKET_SPEED = 1.2;
-/** Contests have a clock: from this round on, the judges get restless and damage escalates. */
+/**
+ * Contests have a clock: from this round on, the judges get restless and damage
+ * compounds each round. (Linear escalation still let tank mirrors run 17 rounds.)
+ */
 export const OVERTIME_ROUND = 7;
-export const OVERTIME_STEP = 0.35;
+export const OVERTIME_GROWTH = 1.4;
 
 export function overtimeMult(round: number): number {
-  return round >= OVERTIME_ROUND ? 1 + OVERTIME_STEP * (round - OVERTIME_ROUND + 1) : 1;
+  return round >= OVERTIME_ROUND ? Math.pow(OVERTIME_GROWTH, round - OVERTIME_ROUND + 1) : 1;
 }
 
 export interface Battler {
