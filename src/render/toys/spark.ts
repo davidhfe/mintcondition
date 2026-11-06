@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { CANDY, GOLD, INK } from '../palette';
-import { starShape } from '../kit';
-import { brow, eyes, mouth, pivot, wave, type ToyBuilder } from './rig';
+import { eyes, pivot, wave, type ToyBuilder } from './rig';
 
 /** Sprocket — tin wind-up middle manager. Visor eyes, rivets, a necktie. */
 export const sprocket: ToyBuilder = (k, body) => {

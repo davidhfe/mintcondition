@@ -14,10 +14,12 @@ persistence is local. Must be playable with one keyboard by two people.
 | Spike | Question | Result |
 |---|---|---|
 | `render` | Can Three.js do cel bands + screen-space halftone + ink lines + CMY misregistration + animation "on twos"? | **Yes.** Custom `ShaderMaterial` (3 bands, rotated dot screen in shadow, colored rim). Inverted-hull silhouettes (5px) + ID-buffer edge pass for inner lines (2px) gives inked line-weight variation. Post pass does misregistration, paper grain, halftone backdrop. Two-camera diagonal **panel split** composited in the same post pass. CPU cost **≈0.7 ms/frame** (60 draw calls). GPU numbers in this container are SwiftShader software raster (80–110 ms) and are not representative; workload is ~3 scene passes + 1 full-screen pass, trivial for any integrated GPU. |
-| `type` | Which faces give "fun *and* classy"? | **Bangers** = the loud voice (callouts, onomatopoeia). **Fraunces** = the narrator (UI, names, captions, logo; 900 italic for display). Five other candidates rejected — two families is the edit. |
+| `type` *(removed after deciding; see screenshot)* | Which faces give "fun *and* classy"? | **Bangers** = the loud voice (callouts, onomatopoeia). **Fraunces** = the narrator (UI, names, captions, logo; 900 italic for display). Five other candidates rejected — two families is the edit. |
 | `input` | Is keyboard timing precise enough for a rhythm minigame? | **Yes.** `KeyboardEvent.timeStamp` shares the `performance.now()` clock; handler lag ≤1.6 ms; rAF steady 16.7 ms. Judge with event timestamps; windows ±55 ms (perfect) / ±120 ms (good) absorb display + keyboard latency. |
 
 ![render spike](../img/spike-render.png)
+
+![type spike](../img/spike-type.png)
 
 ## Decision
 

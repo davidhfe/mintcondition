@@ -70,7 +70,8 @@ export class Kit {
     }
     if (o.pos) g.position.set(...o.pos);
     if (o.rot) g.rotation.set(...o.rot);
-    if (o.scale !== undefined) typeof o.scale === 'number' ? g.scale.setScalar(o.scale) : g.scale.set(...o.scale);
+    if (typeof o.scale === 'number') g.scale.setScalar(o.scale);
+    else if (o.scale) g.scale.set(...o.scale);
     if (o.name) g.name = o.name;
     parent.add(g);
     return g;
@@ -115,7 +116,8 @@ export function starShape(points: number, outer: number, inner: number): THREE.S
     const a = (i / (points * 2)) * Math.PI * 2 + Math.PI / 2;
     const x = Math.cos(a) * r;
     const y = Math.sin(a) * r;
-    i === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+    if (i === 0) s.moveTo(x, y);
+    else s.lineTo(x, y);
   }
   s.closePath();
   return s;

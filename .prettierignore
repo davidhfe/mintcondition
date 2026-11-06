@@ -1,0 +1,5 @@
+dist
+node_modules
+spikes
+docs/img
+package-lock.json
