@@ -36,6 +36,8 @@ export interface SideHud {
   abilityReady: boolean | null;
   /** Brief highlight when the ability fires. */
   abilityFlash: number;
+  /** Timestamp of the last damage taken (nameplate shake). */
+  hitAt: number;
   control: Control | 'cpu';
   label: string;
 }

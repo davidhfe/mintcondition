@@ -66,8 +66,16 @@ export class CameraRig {
     cam.rotateZ(this.roll);
     cam.position.x += shake.x;
     cam.position.y += shake.y;
-    if (cam.fov !== this.fov) {
-      cam.fov = this.fov;
+    // Shots are composed for ~16:9. On tall screens keep the horizontal coverage
+    // of a 1.3 aspect so the toys don't fall off the sides.
+    const minAspect = 1.3;
+    let fov = this.fov;
+    if (cam.aspect < minAspect) {
+      const h = 2 * Math.atan(Math.tan((fov * Math.PI) / 360) * minAspect);
+      fov = (2 * Math.atan(Math.tan(h / 2) / cam.aspect) * 180) / Math.PI;
+    }
+    if (cam.fov !== fov) {
+      cam.fov = fov;
       cam.updateProjectionMatrix();
     }
   }

@@ -1,11 +1,12 @@
 import { render } from 'preact';
-import '@fontsource/bangers';
-import '@fontsource/fraunces/400.css';
-import '@fontsource/fraunces/600.css';
-import '@fontsource/fraunces/900.css';
-import '@fontsource/fraunces/400-italic.css';
-import '@fontsource/fraunces/600-italic.css';
-import '@fontsource/fraunces/900-italic.css';
+// Latin subsets only: every string in the game is English.
+import '@fontsource/bangers/latin-400.css';
+import '@fontsource/fraunces/latin-400.css';
+import '@fontsource/fraunces/latin-600.css';
+import '@fontsource/fraunces/latin-900.css';
+import '@fontsource/fraunces/latin-400-italic.css';
+import '@fontsource/fraunces/latin-600-italic.css';
+import '@fontsource/fraunces/latin-900-italic.css';
 import './styles/app.css';
 import { Stage } from './render/stage';
 import { app, stageRef } from './app/store';

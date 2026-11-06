@@ -130,6 +130,7 @@ export class BattleController {
       abilityText: ab.text,
       abilityReady: ab.oneShot ? true : null,
       abilityFlash: 0,
+      hitAt: 0,
       control: c.control,
       label: c.label,
     };
@@ -161,7 +162,8 @@ export class BattleController {
   }
 
   private setSpirit(side: Side, spirit: number) {
-    this.patchSide(side, { spirit });
+    const hurt = spirit < this.hud.get().sides[side].spirit;
+    this.patchSide(side, hurt ? { spirit, hitAt: Date.now() } : { spirit });
     void this.stage.rt.wait(0.55).then(() => this.patchSide(side, { ghost: spirit }));
   }
 

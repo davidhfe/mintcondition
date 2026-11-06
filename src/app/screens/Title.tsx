@@ -11,7 +11,7 @@ export function Title() {
     const s = stage();
     const set = showcase('tree', ['jack', 'dameFlurry', 'oddrey', 'colonelCrunch', 'chatterbox'], 3.6);
     s.setSet(set);
-    s.rig.shot({ ...TITLE_SHOT, pos: [-2.6, 6, 18] }, true);
+    s.rig.shot({ ...TITLE_SHOT, pos: [-2.2, 6, 18] }, true);
     s.rig.shot(TITLE_SHOT, false, 1.2);
     s.rig.drift = 0.6;
     return () => {
@@ -56,6 +56,7 @@ export function Title() {
         ))}
       </nav>
       {a.notice && <div class="notice panel" onClick={() => app.update((s) => ({ ...s, notice: null }))}>{a.notice}</div>}
+      <div class="rotate-hint">Best played sideways.</div>
       <KeyHint>P1 <b>WASD</b> + <b>SPACE</b> · P2 <b>ARROWS</b> + <b>ENTER</b> · Mouse works too</KeyHint>
     </div>
   );

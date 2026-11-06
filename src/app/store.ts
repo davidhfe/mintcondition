@@ -73,15 +73,22 @@ export function go(screen: Screen) {
   app.update((s) => ({ ...s, screen }));
 }
 
+function persist(fn: () => void) {
+  try {
+    fn();
+  } catch {
+    /* storage full or blocked: the game keeps running, it just won't remember */
+  }
+}
+
 export function setSave(save: SaveData | null) {
-  if (save) writeSave(kv, save);
-  else clearSave(kv);
+  persist(() => (save ? writeSave(kv, save) : clearSave(kv)));
   app.update((s) => ({ ...s, save }));
 }
 
 export function setSettings(p: Partial<Settings>) {
   const next = { ...app.get().settings, ...p };
-  writeSettings(kv, next);
+  persist(() => writeSettings(kv, next));
   setVolume(next.sfx);
   stageRef.current?.setReduceFx(next.reduceFx);
   app.update((s) => ({ ...s, settings: next }));

@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "e2e": "playwright test",
-    "ci": "npm run lint && npm run typecheck && npm test && npm run build"
+    "ci": "npm run lint && npm run typecheck && npm test && npm run build",
+    "build:artifact": "vite build -c vite.artifact.config.ts && node scripts/artifact-wrap.mjs"
   },
   "license": "UNLICENSED",
   "devDependencies": {
@@ -29,6 +30,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.6",
+    "vite-plugin-singlefile": "^2.3.4",
     "vitest": "^5.1.0"
   },
   "dependencies": {

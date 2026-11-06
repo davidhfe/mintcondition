@@ -9,6 +9,7 @@ import { arenaSet, type ArenaSet } from './sets';
 import { buildToy } from './toys';
 import type { ToyRig } from './toys/rig';
 import { FxLayer, impactBurst } from './fx';
+import { blobShadow, type Shadow } from './shadow';
 import { ease, lerp } from './anim';
 import { Kit, setFlash } from './kit';
 import { CANDY, GOLD, INK, PAPER, PLAYER_RIM, TYPE_COLOR } from './palette';
@@ -27,6 +28,7 @@ export class Director {
   readonly fx: FxLayer;
   private tangles: (THREE.Group | null)[] = [null, null];
   private hidden: [boolean, boolean] = [false, false];
+  private shadows: (Shadow | null)[] = [null, null];
 
   constructor(readonly stage: Stage, arena: ArenaId, a: ToySpec | null, b: ToySpec | null) {
     this.set = arenaSet(arena);
@@ -40,11 +42,13 @@ export class Director {
       return r;
     };
     this.rigs = [mk(a, 0), mk(b, 1)];
+    this.shadows = [blobShadow(this.rigs[0], this.set.root), blobShadow(this.rigs[1], this.set.root)];
     this.fx = new FxLayer(this.set.root, () => stage.game);
     const base = this.set.update;
     this.set.update = (anim, game, dt) => {
       base?.(anim, game, dt);
       this.rigs.forEach((r) => r.idle(anim));
+      this.shadows.forEach((s) => s?.update());
       this.fx.update();
       this.tangles.forEach((t) => t && (t.rotation.y = game * 2));
     };
@@ -63,6 +67,8 @@ export class Director {
     this.set.root.add(r.root);
     this.rigs[side] = r;
     this.hidden[side] = false;
+    if (this.shadows[side]) this.set.root.remove(this.shadows[side]!.mesh);
+    this.shadows[side] = blobShadow(r, this.set.root);
   }
 
   head(side: Side): THREE.Vector3 {

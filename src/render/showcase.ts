@@ -5,6 +5,7 @@ import { buildToy } from './toys';
 import { PLAYER_RIM } from './palette';
 import type { StageSet } from './stage';
 import type { ToyRig } from './toys/rig';
+import { blobShadow } from './shadow';
 
 export function showcase(arena: ArenaId, toyIds: string[], radius = 3.4, deluxe = false): StageSet & { rigs: ToyRig[] } {
   const set = arenaSet(arena);
@@ -18,6 +19,7 @@ export function showcase(arena: ArenaId, toyIds: string[], radius = 3.4, deluxe 
     set.root.add(r.root);
     return r;
   });
+  const shadows = rigs.map((r) => blobShadow(r, set.root));
   const base = set.update;
   return {
     ...set,
@@ -28,9 +30,10 @@ export function showcase(arena: ArenaId, toyIds: string[], radius = 3.4, deluxe 
         r.idle(anim + i * 0.37);
         r.body.position.y = Math.max(0, Math.sin((anim + i * 0.5) * Math.PI * 1.2)) * 0.12;
       });
+      shadows.forEach((s) => s.update());
     },
   };
 }
 
-export const TITLE_SHOT = { pos: [-2.6, 2.4, 11.5] as [number, number, number], look: [-3.4, 1.6, 0] as [number, number, number], fov: 34 };
+export const TITLE_SHOT = { pos: [-2.2, 2.4, 12.2] as [number, number, number], look: [-2.9, 1.6, 0] as [number, number, number], fov: 34 };
 

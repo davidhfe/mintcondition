@@ -25,6 +25,13 @@ function Nameplate({ s, side, active }: { s: SideHud; side: Side; active: boolea
   const pct = (v: number) => `${Math.max(0, (v / s.maxSpirit) * 100)}%`;
   const low = s.spirit / s.maxSpirit < 0.3;
   const [pulse, setPulse] = useState(false);
+  const [shake, setShake] = useState(false);
+  useEffect(() => {
+    if (!s.hitAt) return;
+    setShake(true);
+    const t = setTimeout(() => setShake(false), 380);
+    return () => clearTimeout(t);
+  }, [s.hitAt]);
   useEffect(() => {
     if (!s.abilityFlash) return;
     setPulse(true);
@@ -32,7 +39,7 @@ function Nameplate({ s, side, active }: { s: SideHud; side: Side; active: boolea
     return () => clearTimeout(t);
   }, [s.abilityFlash]);
   return (
-    <div class={`plate side${side} ${active ? 'active' : ''}`}>
+    <div class={`plate side${side} ${active ? 'active' : ''} ${shake ? 'hit' : ''}`}>
       <div class="plate-who">{s.label}</div>
       <div class="plate-top">
         <span class="plate-name">{s.name}</span>
