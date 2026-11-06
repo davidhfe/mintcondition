@@ -22,24 +22,24 @@ campaign ~15 showdowns with stewards beatable and the Topper a real finale.
 
 | Toy | Type | Win rate |
 |---|---|---|
-| Big Ted | WARM | 54.1% |
-| Ginger Snap | WARM | 53.8% |
-| Abner | FROST | 52.3% |
-| Chatterbox | SPARK | 52.3% |
-| Dame Flurry | FROST | 51.9% |
-| Slick | FROST | 51.9% |
-| Sprocket | SPARK | 49.4% |
-| Jack | PINE | 48.8% |
-| Chuggs | WARM | 48.5% |
-| Colonel Crunch | PINE | 47.4% |
-| Cymon | SPARK | 45.3% |
-| Dobbin | PINE | 44.5% |
+| Dame Flurry | FROST | 56.3% |
+| Abner | FROST | 53.8% |
+| Slick | FROST | 51.8% |
+| Sprocket | SPARK | 51.2% |
+| Chatterbox | SPARK | 50.4% |
+| Chuggs | WARM | 50.3% |
+| Big Ted | WARM | 49.1% |
+| Cymon | SPARK | 49.0% |
+| Colonel Crunch | PINE | 48.8% |
+| Dobbin | PINE | 47.5% |
+| Ginger Snap | WARM | 46.4% |
+| Jack | PINE | 45.5% |
 
-- Type-advantaged side wins **74.2%**. Home contest **61.3%**.
-- Median battle **7 turns** (p90 16); **20%** reach overtime.
-- First mover wins **58%** — speed matters, doesn't decide.
-- Skill: hard hands beat normal **73%**, normal beat easy **77%**; a smarter
-  brain with the same hands wins **65%**.
+- Type-advantaged side wins **~75%**. Home contest **~60%**.
+- Median battle **7 turns** (p90 17); **~23%** reach overtime.
+- First mover wins **~56%** — speed matters, doesn't decide.
+- Skill: hard hands beat normal **~75%**, normal beat easy **~80%**; a smarter
+  brain with the same hands wins **~63%**.
 
 ### Campaign curve — normal-skill player
 
@@ -63,7 +63,57 @@ campaign ~15 showdowns with stewards beatable and the Topper a real finale.
 
 ## 2 · Bot playtests through the real UI
 
-BOT_RESULTS
+### Round 1 — and why it was the wrong test
+
+The first bot reacted to the DOM once per frame. In this headless environment
+WebGL runs in software at 5–12fps, so every reading was up to 200ms stale:
+timing scores came out flat (~0.3) regardless of bot skill and Keep Cool was
+almost never hit. It also used Big Ted, whose level-3 moves are *all* timing
+games, so rhythm and mash were never exercised. Two useful results survived:
+
+- **Big Ted vs Big Ted ran 34 turns (190s).** Linear overtime was too gentle →
+  overtime now compounds ×1.4 per round.
+- **It prompted the calibration below**, which turned out to matter far more.
+
+### The calibration — `npm run curve`
+
+`scripts/minigame-curve.ts` runs the *real* scoring functions against a
+person modelled as a timing error σ (with a 25ms late bias for display and
+input latency). Before calibration, a first-timer (σ≈110ms) scored ~0.70 on
+every rhythm difficulty and got PERFECT on Keep Cool half the time, while the
+CPU's "normal" hands assume 0.66. People would have flattened the campaign and
+★★★ wasn't harder than ★. After:
+
+| Game | σ=25 regular | σ=45 good | σ=70 average | σ=110 first time |
+|---|---|---|---|---|
+| Rhythm ★ / ★★★ | 0.96 / 0.92 | 0.85 / 0.78 | 0.70 / 0.62 | 0.52 / 0.44 |
+| Timing ★ / ★★★ | 0.94 / 0.85 | 0.86 / 0.72 | 0.76 / 0.57 | 0.60 / 0.41 |
+| Keep Cool (perfect / steady) | 88% / 12% | 62% / 36% | 42% / 42% | 28% / 35% |
+
+CPU "normal" hands: 0.66 / 0.52, Keep Cool 35% / 40% — i.e. an average person.
+Mash is deliberately the forgiving one (★ target 12 presses in 2s).
+
+### Round 2 — bot v2, through the real UI
+
+The bot now predicts *when* each note arrives / the needle crosses / the ring
+closes (MutationObservers on the DOM) and schedules a real keypress for that
+moment plus N(25ms, σ). The game judges by event timestamp, so frame rate no
+longer matters. Versus vs CPU (normal), P1 = Dame Flurry and Cymon (between
+them: rhythm ★/★★/★★★, timing ★/★★, mash ★), Tree Trimming:
+
+| σ | Rhythm | Keep Cool (perfect / steady / none) | Results |
+|---|---|---|---|
+| 30ms | 0.92 (★), 0.88 (★★★) | 5 / 0 / 2 | W 7 turns 57s · W 9 turns 64s |
+| 70ms | 0.64 | 4 / 4 / 1 | L 7 turns 47s · L 9 turns 62s |
+| 110ms | 0.61 | 2 / 2 / 3 | L 5 turns 37s · L 8 turns 57s |
+
+- Scores track σ the way the curve predicts (small samples — this verifies
+  the wiring, the curve is the statistics).
+- **Battles: 5–9 turns, 37–64s wall-clock** (~7s a turn). That's the length we
+  wanted: long enough for a comeback, short enough for "one more".
+- The σ=70 bot losing to CPU-normal is fair: it picks moves at random (70%
+  attacks), the CPU picks by expected value.
+- 6 full battles, 0 errors.
 
 ## 3 · Screenshot review — bugs found and fixed
 
