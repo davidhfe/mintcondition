@@ -23,7 +23,8 @@ addEventListener('pointerdown', unlockAudio, { once: true });
 // Our key handling owns Space/Enter; a focused button would otherwise activate twice.
 addEventListener('click', (e) => (e.target as HTMLElement).closest?.('button') && (document.activeElement as HTMLElement | null)?.blur());
 addEventListener('keydown', unlockAudio, { once: true });
-void loadVoiceOver();
+// The single-file artifact build has no /vo folder to load from.
+if (import.meta.env.MODE !== 'artifact') void loadVoiceOver();
 
 render(<App />, document.getElementById('ui')!);
 
