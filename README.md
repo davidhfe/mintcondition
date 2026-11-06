@@ -9,6 +9,14 @@ contests — cookie decorating, gift wrapping, light shows — played like a
 fighting game. Every move is a two-second skill performance; every incoming hit
 is a chance to keep your cool. Beat a toy at its own game and it gets in the box.
 
+![title](docs/img/title.jpg)
+
+| | |
+|---|---|
+| ![battle](docs/img/battle.jpg) | ![vs](docs/img/vs.jpg) |
+| ![keep cool](docs/img/keepcool.jpg) | ![humbugged](docs/img/ko.jpg) |
+| ![map](docs/img/map.jpg) | ![shelf](docs/img/shelf.jpg) |
+
 - **Story** — four departments and a finale, ~15 showdowns. Box all 13 toys.
 - **Versus** — two players, one keyboard. Pick the contest, pick your toys, go.
   Or play the CPU.
@@ -43,6 +51,8 @@ Open http://localhost:5173. There's also a dev-only toy lab at
 | `npm test` | Unit tests (rules, progression, save, scoring, data/tone rules) |
 | `npm run e2e` | Playwright against the production build; a page-side bot plays the real minigames |
 | `npm run balance` | Simulates ~20k showdowns and prints the balance report (`-- --quick` for fewer) |
+| `npm run curve` | Expected minigame scores by human timing error (how the windows were calibrated) |
+| `npm run build:artifact` | One self-contained HTML file (for sharing as a claude.ai artifact) |
 | `npm run lint` / `typecheck` | ESLint / tsc |
 
 ## Deploy (Vercel)

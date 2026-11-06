@@ -50,21 +50,33 @@ function request(key: string, make: () => string): Promise<string> {
 
 const shade = (c: number, k: number) => new THREE.Color(c).multiplyScalar(k).getHex();
 
-export function portrait(toyId: string, deluxe = false): Promise<string> {
-  return request(`p:${toyId}:${deluxe}`, () => {
+export function portrait(toyId: string, deluxe = false, silhouette = false): Promise<string> {
+  return request(`p:${toyId}:${deluxe}:${silhouette}`, () => {
     const t = toy(toyId);
     const rig = buildToy(toyId, PLAYER_RIM[0]);
     rig.setDeluxe(deluxe);
     rig.root.rotation.y = 0.45;
     rig.idle(0);
+    if (silhouette) {
+      for (const m of rig.kit.materials) {
+        m.uniforms.uColor.value.set(0x2a1f3d);
+        m.uniforms.uShade.value.set(0x1a1026);
+        m.uniforms.uGloss.value = 0;
+        m.uniforms.uRimAmt.value = 0;
+        m.uniforms.uGlow.value = 1;
+        m.transparent = false;
+        m.depthWrite = true;
+        (m.uniforms as unknown as { uOpacity: { value: number } }).uOpacity.value = 1;
+      }
+    }
     const root = new THREE.Group();
     root.add(rig.root);
     const k = new Kit(0xffe9a8);
     k.cyl(1.6, 1.6, 0.2, k.mat(0xfff4e0), root, { pos: [0, -0.1, 0] });
     const h = rig.height;
-    const tc = TYPE_COLOR[t.type];
+    const tc = silhouette ? 0xe9dcc4 : TYPE_COLOR[t.type];
     return stage().snapshot(
-      { root, bg: { a: shade(tc, 1.0), b: shade(tc, 0.55), dot: shade(tc, 0.35), dotAmt: 0.7, burst: 0.6 } },
+      { root, bg: { a: shade(tc, 1.0), b: shade(tc, silhouette ? 0.85 : 0.55), dot: shade(tc, silhouette ? 0.7 : 0.35), dotAmt: 0.7, burst: 0.6 } },
       { pos: [0.3, h * 0.55, 4 + h * 1.15], look: [0, h * 0.47, 0], fov: 32 },
       300,
       340,

@@ -61,11 +61,11 @@ export function Portrait({ toyId, deluxe, hidden, class: cls }: { toyId: string;
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
-    void portrait(toyId, deluxe).then((u) => live && setUrl(u));
+    void portrait(toyId, deluxe, hidden).then((u) => live && setUrl(u));
     return () => {
       live = false;
     };
-  }, [toyId, deluxe]);
+  }, [toyId, deluxe, hidden]);
   return <div class={`portrait ${hidden ? 'unknown' : ''} ${cls ?? ''}`}>{url ? <img src={url} alt="" draggable={false} /> : <div class="portrait-wait" />}</div>;
 }
 

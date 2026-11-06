@@ -37,7 +37,8 @@
     if (prev.done) return;
     const dv = value - prev.v;
     const dt = now - prev.t;
-    if (dt < 1 || Math.abs(dv) < 1e-6) return;
+    if (dt < 1) return;
+    if (Math.abs(dv) < 1e-6) return tracks.set(el, { v: value, t: now, done: false }); // not moving yet
     const speed = dv / dt;
     const eta = (target - value) / speed;
     if (eta < 0) {

@@ -3,7 +3,7 @@
 **One sentence:** real toys, built from the shapes toys are actually made of,
 printed on cheap newsprint by a press that's slightly out of register.
 
-![battle](img/battle.png)
+![battle](img/battle.jpg)
 
 ## The rules
 
